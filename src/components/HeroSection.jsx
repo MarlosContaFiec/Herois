@@ -1,6 +1,6 @@
 import Card from "./Card";
 
-function HeroSection({ titulo, lista, onExcluir }) {
+function HeroSection({ titulo, lista, onExcluir, onEvoluir }) { // ✅ recebe onEvoluir
   return (
     <>
       <h2 style={{ textAlign: "center", marginTop: 20 }}>{titulo}</h2>
@@ -12,6 +12,7 @@ function HeroSection({ titulo, lista, onExcluir }) {
             key={heroi.id}
             heroi={heroi}
             onExcluir={onExcluir}
+            onEvoluir={onEvoluir}
           />
         ))}
       </div>

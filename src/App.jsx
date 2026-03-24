@@ -9,9 +9,9 @@ import { useState, useEffect } from "react";
 function App() {
 
   const heroisBase = [
-    { id: 1, nome: "Arthemis", classe: "Arqueira", imagem: "arqueira",tipo_dano:"longo_alcance" ,status: "online", ativo : true },
-    { id: 2, nome: "Grog", classe: "Guerreiro", imagem: "guerreiro",tipo_dano:"corpo_a_corpo" , status: "ausente",ativo : true },
-    { id: 3, nome: "Elora", classe: "Maga", imagem: "mage",tipo_dano:"dano_explosivo" , status: "offline",ativo : true },
+    { id: 1, nome: "Arthemis", classe: "Arqueira", imagem: "arqueira",tipo_dano:"longo_alcance" ,status: "online", ativo : true,curretexp: 0,maxExp : 80},
+    { id: 2, nome: "Grog", classe: "Guerreiro", imagem: "guerreiro",tipo_dano:"corpo_a_corpo" , status: "ausente",ativo : true,curretexp: 0,maxExp : 100},
+    { id: 3, nome: "Elora", classe: "Maga", imagem: "mage",tipo_dano:"dano_explosivo" , status: "offline",ativo : true,curretexp: 0,maxExp : 120 },
 
   ];
   const [classe, setClasse] = useState("");
@@ -52,6 +52,30 @@ function App() {
       )
     );
   };
+  // const calcularLevel = (heroi) => {
+  //   const xpPercent = (heroi.curretexp % heroi.maxExp) / h.maxExp * 100;
+  //   return (Math.floor(heroi.curretexp / heroi.maxExp) + 1, xpPercent);
+  // };
+  const calcularLevel = (id) => {
+    setHerois(prev =>
+      prev.map(h =>{
+        const xpPercent = (h.curretexp % h.maxExp) / h.maxExp * 100;
+        return { ...h (Math.floor(h.curretexp / h.maxExp) + 1, xpPercent)};
+      })
+    )
+  };
+
+  const evoluirHeroi = (id) => {
+    setHerois(prev =>
+      prev.map(h =>{
+        if (h.id === id) {
+          const novoEXP = h.curretexp + 10;
+          return { ...h, curretexp: novoEXP };
+        }
+        return h;
+      })
+    );
+  };
 
   return (
     <>
@@ -79,18 +103,21 @@ function App() {
         titulo="🛡 Corpo a corpo"
         lista={herois.filter(h => h.tipo_dano === "corpo_a_corpo" && h.ativo)}
         onExcluir={excluirHeroi}
+        onEvoluir={evoluirHeroi}
       />
 
       <HeroSection
         titulo="✨ Dano Explosivo"
         lista={herois.filter(h => h.tipo_dano === "dano_explosivo" && h.ativo)}
         onExcluir={excluirHeroi}
+        onEvoluir={evoluirHeroi}
       />
 
       <HeroSection
         titulo="🏹 Longo alcance"
         lista={herois.filter(h => h.tipo_dano === "longo_alcance" && h.ativo)}
         onExcluir={excluirHeroi}
+        onEvoluir={evoluirHeroi}
       />
     </>
   );

@@ -9,7 +9,8 @@ const imagens = {
   guerreiro,
   maga: mage
 };
-function Card({ heroi, onExcluir }) {
+
+function Card({ heroi, onExcluir, onEvoluir, calcularLevel}) {
 
   const handleRecrutar = () => {
     alert(`Herói ${heroi.nome} foi recrutado com sucesso!`);
@@ -18,6 +19,10 @@ function Card({ heroi, onExcluir }) {
   const handleExcluir = () => {
     onExcluir(heroi.id);
     alert(`Herói ${heroi.nome} foi Excluido com sucesso!`);
+  };
+
+  const handleEvoluir = () => {
+    onEvoluir(heroi.id);
   };
 
   const cardStyle = {
@@ -36,11 +41,8 @@ function Card({ heroi, onExcluir }) {
         <StatusBadge tipo={heroi.status} />
       </div>
 
-      <img src={
-          imagens[
-            heroi.imagem
-          ] || user
-        }
+      <img
+        src={imagens[heroi.imagem] || user}
         alt={heroi.nome}
         onError={(e) => {
           e.currentTarget.onerror = null;
@@ -49,8 +51,9 @@ function Card({ heroi, onExcluir }) {
         style={{ width: "100%", borderRadius: "8px" }}
       />
 
-      <h2>{heroi.nome}</h2>
+      <h2>{heroi.nome} LV {calcularLevel(heroi)}</h2>
       <p>Classe: {heroi.classe}</p>
+
       <button
         type="button"
         onClick={handleRecrutar}
@@ -68,6 +71,7 @@ function Card({ heroi, onExcluir }) {
       >
         Recrutar ⚔️
       </button>
+
       <button
         type="button"
         onClick={handleExcluir}
@@ -84,6 +88,21 @@ function Card({ heroi, onExcluir }) {
         "
       >
         Excluir ☠️
+      </button>
+
+      {/* Barra de EXP */}
+      <div className="h-4 bg-gray-200 rounded-full w-full mt-2">
+        <div
+          className="h-full bg-indigo-600 rounded-full transition-all"
+          style={{ width: `${xpPercent}%` }}
+        />
+      </div>
+
+      <button
+        className="mt-2 px-3 py-1 bg-indigo-600 text-white rounded"
+        onClick={handleEvoluir}
+      >
+        LVL UP ⬆️
       </button>
     </div>
   );
