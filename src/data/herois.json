@@ -1,4 +1,7 @@
 [
+{"id": 1,"nome":"Arthemis","classe":"Arqueira","imagem":"arqueira","tipo_dano":"longo_alcance" ,"status":"online","ativo" : true,"curretexp": 0,"maxExp" : 80},
+{"id": 2,"nome":"Grog","classe":"Guerreiro","imagem":"guerreiro","tipo_dano":"corpo_a_corpo" ,"status":"ausente","ativo" : true,"curretexp": 0,"maxExp" : 100},
+{"id": 3,"nome":"Elora","classe":"Maga","imagem":"mage","tipo_dano":"dano_explosivo" ,"status":"offline","ativo" : true,"curretexp": 0,"maxExp" : 120 },
 {"id":10,"nome":"Luna","classe":"Arqueira","imagem":"arqueira","tipo_dano":"longo_alcance","status":"online","ativo":true,"curretexp": 0,"maxExp" : 120 },
 {"id":11,"nome":"Brak","classe":"Guerreiro","imagem":"guerreiro","tipo_dano":"corpo_a_corpo","status":"offline","ativo":true,"curretexp": 0,"maxExp" : 120 },
 {"id":12,"nome":"Eldrin","classe":"Mago","imagem":"mage","tipo_dano":"dano_explosivo","status":"ausente","ativo":true,"curretexp": 0,"maxExp" : 120 },
