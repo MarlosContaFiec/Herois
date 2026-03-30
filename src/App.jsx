@@ -29,7 +29,6 @@ function App() {
     }
   };
 
-  // 🔹 carregar heróis (json ou localStorage)
   useEffect(() => {
     const salvo = localStorage.getItem("herois");
 
@@ -46,19 +45,16 @@ function App() {
     setHerois(listaNormalizada);
   }, []);
 
-  // 🔹 salvar no localStorage
   useEffect(() => {
     if (todosHerois.length > 0) {
       localStorage.setItem("herois", JSON.stringify(todosHerois));
     }
   }, [todosHerois]);
 
-  // 🔹 bloquear scroll quando modal abre
   useEffect(() => {
     document.body.style.overflow = mostrarForm ? "hidden" : "auto";
   }, [mostrarForm]);
 
-  // 🔹 filtro automático (classe + busca)
   useEffect(() => {
     filtrar(classe, busca);
   }, [classe, busca, todosHerois]);
