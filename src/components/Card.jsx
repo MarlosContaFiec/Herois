@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import StatusBadge from "./StatusBadge";
-import "./Card.css"
+import "./Card.css";
 import user from "../assets/avatar/user.png";
 import arqueira from "../assets/avatar/arqueira.png";
 import guerreiro from "../assets/avatar/guerreiro.png";
@@ -13,6 +13,8 @@ const imagens = {
 };
 
 function Card({ heroi, onExcluir, onEvoluir }) {
+  const [recrutados, setRecrutados] = useState(0);
+  const [levelUp, setLevelUp] = useState(false);
 
   const getLevelClass = (level) => {
     if (level >= 100) return "lv-carmine";
@@ -32,20 +34,25 @@ function Card({ heroi, onExcluir, onEvoluir }) {
   };
 
   const { level, xpPercent } = calcularLevel(heroi);
-
-  const [levelUp, setLevelUp] = useState(false);
   const prevLevel = useRef(level);
 
   useEffect(() => {
     if (level > prevLevel.current) {
       setLevelUp(true);
-      setTimeout(() => setLevelUp(false), 800);
+      const timer = setTimeout(() => setLevelUp(false), 800);
       prevLevel.current = level;
+
+      return () => clearTimeout(timer);
     }
   }, [level]);
 
+  useEffect(() => {
+    document.title = `Heróis Recrutados: ${recrutados}`;
+  }, [recrutados]);
+
   const handleRecrutar = () => {
     alert(`Herói ${heroi.nome} foi recrutado com sucesso!`);
+    setRecrutados((prev) => prev + 1);
   };
 
   const handleExcluir = () => {
@@ -78,9 +85,15 @@ function Card({ heroi, onExcluir, onEvoluir }) {
 
       <progress value={xpPercent} max="100" />
 
-      <button onClick={handleRecrutar} className="btn btn-recrutar">Recrutar ⚔️</button>
-      <button onClick={() => onEvoluir(heroi.id)} className="btn btn-ex">Ganhar XP ⚡</button>
-      <button onClick={handleExcluir} className="btn btn-excluir">Excluir ☠️</button>
+      <button onClick={handleRecrutar} className="btn btn-recrutar">
+        Recrutar ⚔️
+      </button>
+      <button onClick={() => onEvoluir(heroi.id)} className="btn btn-ex">
+        Ganhar XP ⚡
+      </button>
+      <button onClick={handleExcluir} className="btn btn-excluir">
+        Excluir ☠️
+      </button>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import Card from "./Card";
 
 function HeroSection({ titulo, lista, onExcluir, onEvoluir }) {
+  
+  
   return (
     <>
       <h2 style={{ textAlign: "center", marginTop: 20 }}>{titulo}</h2>

@@ -35,16 +35,16 @@ function Formulario({ onCriar, heroisBase }) {
     if (!nome || !classe || !tipoDano) return;
 
     const novoHeroi = {
-      id: Date.now(),
-      nome,
-      classe,
-      imagem: classe.toLowerCase(),
-      tipo_dano: tipoDano,
-      status,
-      ativo: true,
-      curretexp: 0,
-      maxExp: calcularMaxExp(tipoDano),
-    };
+        id: Date.now(),
+        nome,
+        classe,
+        imagem: classe.toLowerCase(),
+        tipo_dano: tipoDano,
+        status,
+        ativo: true,
+        curretexp: 0,
+        maxExp: calcularMaxExp(tipoDano),
+        };
 
     onCriar(novoHeroi);
 
