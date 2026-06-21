@@ -39,6 +39,8 @@ export const VANTAGEM = {
   TREVAS: 'LUZ',
 };
 
+export const ELEMENTOS = ['FOGO', 'AGUA', 'TERRA', 'VENTO', 'LUZ', 'TREVAS'];
+
 export const TRINCO_CLASSE = {
   GUERREIRO:   { tipo: 'PODER',   descricao: '+15% poder',           valor: 0.15 },
   MAGO:        { tipo: 'MOEDAS',  descricao: '+100% moedas',        valor: 1.00 },
