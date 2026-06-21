@@ -1,0 +1,536 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Raridade {
+  COMUM
+  INCOMUM
+  RARA
+  EPICA
+  LENDARIA
+  UNICA
+}
+
+enum Elemento {
+  FOGO
+  AGUA
+  TERRA
+  VENTO
+  LUZ
+  TREVAS
+}
+
+enum ClasseCarta {
+  GUERREIRO
+  MAGO
+  PATRULHEIRO
+  CURANDEIRO
+  LADINO
+}
+
+enum PapelUsuario {
+  USUARIO
+  ADMIN
+}
+
+enum TipoBonusTitulo {
+  SORTE
+  TEMPO
+  MOEDAS
+}
+
+enum TipoEntradaGuilda {
+  AUTOMATICO
+  PEDIDO
+  SOMENTE_CONVITE
+}
+
+enum PapelGuilda {
+  LIDER
+  VICE
+  MEMBRO
+}
+
+enum StatusListagem {
+  ATIVO
+  VENDIDO
+  CANCELADO
+}
+
+enum ResultadoMissao {
+  VITORIA
+  DERROTA
+}
+
+enum TipoOferta {
+  MOEDAS
+  CARTA
+  PACOTE
+  TITULO
+}
+
+model Usuario {
+  id                String       @id @default(cuid()) @map("_id")
+  nomeUsuario       String       @unique
+  email             String       @unique
+  senhaHash         String
+  papel             PapelUsuario @default(USUARIO)
+  moedas            Int          @default(100)
+  nivel             Int          @default(1)
+  experiencia       Int          @default(0)
+  tituloAtivoId     String?
+  sequenciaLogin    Int          @default(0)
+  ultimoLogin       DateTime?
+
+  tituloAtivo       Titulo?          @relation("TituloAtivo", fields: [tituloAtivoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cartas            CartaUsuario[]
+  cartasLab         CartaLaboratorio[]
+  cartasCriadas     Carta[]          @relation("CriadorCarta")
+  tentativasMissao  TentativaMissao[]
+  tentativasDiarias TentativaDiaria[]
+  membroGuilda      MembroGuilda?
+  guildasCriadas    Guilda[]         @relation("CriadorGuilda")
+  listagensTroca    ListagemTroca[]
+  ofertasFeitas     OfertaTroca[]    @relation("CriadorOferta")
+  comprasPacote     CompraPacote[]
+  pacotesUsuario    PacoteUsuario[]
+  titulosUsuario    TituloUsuario[]
+  ataquesBoss       AtaqueBossGuilda[]
+  boostersCriados   Booster[]
+  pedidosGuilda     PedidoGuilda[]
+  sessoesIniciadas  SessaoTroca[]
+
+  criadoEm          DateTime     @default(now())
+  atualizadoEm      DateTime     @updatedAt
+
+  @@map("usuarios")
+}
+
+model Carta {
+  id               String     @id @default(cuid()) @map("_id")
+  nome             String
+  descricao        String?
+  imagem           String?
+  elemento         Elemento
+  classe           ClasseCarta
+  raridade         Raridade
+  poder            Int
+  criadaPorJogador Boolean    @default(false)
+  criadorId        String?
+  pacoteUnicoId    String?
+
+  criador       Usuario?       @relation("CriadorCarta", fields: [criadorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pacoteUnico   Pacote?        @relation("CartaUnicaPacote", fields: [pacoteUnicoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cartasUsuario CartaUsuario[]
+
+  criadoEm      DateTime       @default(now())
+
+  @@index([elemento, classe, raridade])
+  @@map("cartas")
+}
+
+model CartaUsuario {
+  id               String @id @default(cuid()) @map("_id")
+  usuarioId        String
+  cartaId          String
+  xp               Int    @default(0)
+  nivel            Int    @default(1)
+  contagemEvoluida Int    @default(0)
+  serieEvolucao    Int?
+
+  usuario           Usuario       @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  carta             Carta         @relation(fields: [cartaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  listagens         ListagemTroca[]
+  ofertasOferecidas OfertaTroca[] @relation("OfertaCarta")
+
+  adquiridoEm       DateTime      @default(now())
+
+  @@unique([usuarioId, cartaId])
+  @@map("cartas_usuario")
+}
+
+model CartaLaboratorio {
+  id        String     @id @default(cuid()) @map("_id")
+  usuarioId String
+  nome      String
+  descricao String?
+  imagem    String?
+  elemento  Elemento
+  classe    ClasseCarta
+  raridade  Raridade
+  poder     Int
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm  DateTime @default(now())
+
+  @@index([usuarioId])
+  @@map("cartas_laboratorio")
+}
+
+model Titulo {
+  id                  String          @id @default(cuid()) @map("_id")
+  nome                String          @unique
+  descricao           String?
+  tipoBonus           TipoBonusTitulo
+  valorBonus          Float
+  trocavel            Boolean         @default(false)
+  condicaoDesbloqueio String?
+
+  usuariosAtivos   Usuario[]        @relation("TituloAtivo")
+  titulosUsuario   TituloUsuario[]
+
+  criadoEm         DateTime         @default(now())
+
+  @@map("titulos")
+}
+
+model TituloUsuario {
+  id                String @id @default(cuid()) @map("_id")
+  usuarioId         String
+  tituloId          String
+
+  usuario           Usuario       @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  titulo            Titulo        @relation(fields: [tituloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertasOferecidas OfertaTroca[] @relation("OfertaTitulo")
+
+  adquiridoEm       DateTime      @default(now())
+
+  @@unique([usuarioId, tituloId])
+  @@map("titulos_usuario")
+}
+
+model Pacote {
+  id                  String  @id @default(cuid()) @map("_id")
+  nome                String
+  descricao           String?
+  custo               Int
+  qtdCartas           Int
+  unico               Boolean @default(false)
+  secreto             Boolean @default(false)
+  sazonal             Boolean @default(false)
+  pacotePaiId         String?
+
+  pesoComum           Float   @default(50)
+  pesoIncomum         Float   @default(30)
+  pesoRara            Float   @default(15)
+  pesoEpica           Float   @default(4)
+  pesoLendaria        Float   @default(1)
+
+  condicaoDesbloqueio String?
+
+  pacotePai      Pacote?        @relation("PacoteUpgrade", fields: [pacotePaiId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  upgrades       Pacote[]       @relation("PacoteUpgrade")
+  cartasUnicas   Carta[]        @relation("CartaUnicaPacote")
+  compras        CompraPacote[]
+  pacotesUsuario PacoteUsuario[]
+
+  criadoEm       DateTime       @default(now())
+
+  @@map("pacotes")
+}
+
+model CompraPacote {
+  id              String @id @default(cuid()) @map("_id")
+  usuarioId       String
+  pacoteId        String
+  cartasRecebidas String
+
+  usuario  Usuario @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pacote   Pacote  @relation(fields: [pacoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm DateTime @default(now())
+
+  @@index([usuarioId, pacoteId])
+  @@map("compras_pacote")
+}
+
+model PacoteUsuario {
+  id         String  @id @default(cuid()) @map("_id")
+  usuarioId  String
+  pacoteId   String
+  origem     String
+  aberto     Boolean @default(false)
+
+  usuario    Usuario       @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pacote     Pacote        @relation(fields: [pacoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertas    OfertaTroca[] @relation("OfertaPacote")
+
+  adquiridoEm DateTime @default(now())
+
+  @@map("pacotes_usuario")
+}
+
+model Booster {
+  id           String @id @default(cuid()) @map("_id")
+  nome         String
+  custo        Int
+  qtdCartas    Int
+
+  pesoComum    Float  @default(50)
+  pesoIncomum  Float  @default(30)
+  pesoRara     Float  @default(15)
+  pesoEpica    Float  @default(4)
+  pesoLendaria Float  @default(1)
+
+  criadorId    String
+  criador      Usuario @relation(fields: [criadorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm     DateTime @default(now())
+
+  @@map("boosters")
+}
+
+model CriacaoCartaDiaria {
+  id        String  @id @default(cuid()) @map("_id")
+  usuarioId String
+  cartaId   String
+  raridade  Raridade
+  custoPago Int
+
+  criadoEm  DateTime @default(now())
+
+  @@index([usuarioId, criadoEm])
+  @@map("criacoes_carta_diaria")
+}
+
+model Missao {
+  id                  String  @id @default(cuid()) @map("_id")
+  nome                String
+  descricao           String?
+  elemento            Elemento
+  nomeInimigo         String
+  poderInimigo        Int
+  qtdCartasInimigo    Int     @default(1)
+  recompensaMoedas    Int
+  recompensaExp       Int
+  tempoMinutos        Int
+  condicaoDesbloqueio String?
+
+  tentativas    TentativaMissao[]
+  missoesGuilda MissaoGuilda[]
+
+  criadoEm      DateTime @default(now())
+
+  @@map("missoes")
+}
+
+model TentativaMissao {
+  id           String          @id @default(cuid()) @map("_id")
+  usuarioId    String
+  missaoId     String
+  cartasUsadas String
+  trioClasse   Boolean         @default(false)
+  resultado    ResultadoMissao
+  moedasGanhas Int             @default(0)
+  expGanha     Int             @default(0)
+  tempoGasto   Int
+  iniciadoEm   DateTime        @default(now())
+  completadoEm DateTime?
+
+  usuario  Usuario @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  missao   Missao  @relation(fields: [missaoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([usuarioId, missaoId])
+  @@map("tentativas_missao")
+}
+
+model TentativaDiaria {
+  id           String          @id @default(cuid()) @map("_id")
+  usuarioId    String
+  dataMissao   DateTime
+  cartasUsadas String
+  resultado    ResultadoMissao
+  recompensas  String?
+
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm DateTime @default(now())
+
+  @@unique([usuarioId, dataMissao])
+  @@map("tentativas_diaria")
+}
+
+model Guilda {
+  id                String            @id @default(cuid()) @map("_id")
+  nome              String            @unique
+  descricao         String?
+  tipoEntrada       TipoEntradaGuilda @default(AUTOMATICO)
+  custoCriacao      Int               @default(1000)
+  criadorId         String            @unique
+
+  tipoAgendaTroca   String            @default("MANUAL")
+  horarioFixoTroca  String?
+  ultimoAgendadorId String?
+  ultimoAgendamento DateTime?
+
+  criador     Usuario          @relation("CriadorGuilda", fields: [criadorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  membros     MembroGuilda[]
+  missoes     MissaoGuilda[]
+  sessoes     SessaoTroca[]
+  pedidos     PedidoGuilda[]
+  bosses      BossGuilda[]
+
+  criadoEm    DateTime         @default(now())
+
+  @@map("guildas")
+}
+
+model MembroGuilda {
+  id        String      @id @default(cuid()) @map("_id")
+  guildaId  String
+  usuarioId String      @unique
+  papel     PapelGuilda @default(MEMBRO)
+
+  guilda   Guilda  @relation(fields: [guildaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario  Usuario @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  entrouEm DateTime @default(now())
+
+  @@index([guildaId])
+  @@map("membros_guilda")
+}
+
+model PedidoGuilda {
+  id        String @id @default(cuid()) @map("_id")
+  guildaId  String
+  usuarioId String
+  status    String @default("PENDENTE")
+
+  guilda   Guilda  @relation(fields: [guildaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario  Usuario @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm DateTime @default(now())
+
+  @@unique([guildaId, usuarioId])
+  @@map("pedidos_guilda")
+}
+
+model MissaoGuilda {
+  id            String   @id @default(cuid()) @map("_id")
+  guildaId      String
+  missaoId      String
+  status        String   @default("DISPONIVEL")
+  dataAtribuida DateTime
+
+  guilda  Guilda @relation(fields: [guildaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  missao  Missao @relation(fields: [missaoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([guildaId, missaoId, dataAtribuida])
+  @@map("missoes_guilda")
+}
+
+model BossGuilda {
+  id            String   @id @default(cuid()) @map("_id")
+  guildaId      String
+  elemento      Elemento
+  nivel         Int      @default(0)
+  hpAtual       Int
+  hpMaximo      Int
+  poderBase     Int
+  dataAtribuida DateTime
+
+  guilda   Guilda            @relation(fields: [guildaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ataques  AtaqueBossGuilda[]
+
+  @@unique([guildaId, dataAtribuida])
+  @@map("bosses_guilda")
+}
+
+model AtaqueBossGuilda {
+  id           String  @id @default(cuid()) @map("_id")
+  bossId       String
+  usuarioId    String
+  cartasUsadas String
+  poderUsado   Int
+  danoCausado  Int
+  derrotou     Boolean @default(false)
+
+  boss     BossGuilda @relation(fields: [bossId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario  Usuario    @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm DateTime @default(now())
+
+  @@index([bossId, usuarioId])
+  @@map("ataques_boss_guilda")
+}
+
+model SessaoTroca {
+  id             String   @id @default(cuid()) @map("_id")
+  guildaId       String
+  iniciadaPorId  String
+  iniciadaEm     DateTime @default(now())
+  expiraEm       DateTime
+
+  guilda       Guilda          @relation(fields: [guildaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  iniciadaPor  Usuario         @relation(fields: [iniciadaPorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  listagens    ListagemTroca[]
+  ofertas      OfertaTroca[]
+
+  @@index([guildaId, expiraEm])
+  @@map("sessoes_troca")
+}
+
+model ListagemTroca {
+  id              String         @id @default(cuid()) @map("_id")
+  sessaoId        String
+  usuarioId       String
+  cartaUsuarioId  String
+  precoPedido     Int?
+  status          StatusListagem @default(ATIVO)
+
+  sessao       SessaoTroca  @relation(fields: [sessaoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario      Usuario      @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cartaUsuario CartaUsuario  @relation(fields: [cartaUsuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertas      OfertaTroca[]
+
+  criadoEm     DateTime     @default(now())
+
+  @@unique([sessaoId, cartaUsuarioId])
+  @@map("listagens_troca")
+}
+
+model OfertaTroca {
+  id              String     @id @default(cuid()) @map("_id")
+  sessaoId        String
+  listagemId      String
+  ofertanteId     String
+  tipoOferta      TipoOferta
+  ofertaMoedas    Int?
+  ofertaCartaId   String?
+  ofertaPacoteId  String?
+  ofertaTituloId  String?
+  status          String     @default("PENDENTE")
+
+  sessao       SessaoTroca    @relation(fields: [sessaoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  listagem     ListagemTroca  @relation(fields: [listagemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertante    Usuario        @relation("CriadorOferta", fields: [ofertanteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertaCarta  CartaUsuario?  @relation("OfertaCarta", fields: [ofertaCartaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertaPacote PacoteUsuario? @relation("OfertaPacote", fields: [ofertaPacoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ofertaTitulo TituloUsuario? @relation("OfertaTitulo", fields: [ofertaTituloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm     DateTime       @default(now())
+
+  @@index([listagemId])
+  @@map("ofertas_troca")
+}
+
+model EstatisticaSemanal {
+  id                 String   @id @default(cuid()) @map("_id")
+  usuarioId          String
+  semanaInicio       DateTime
+  pacotesAbertos     Int      @default(0)
+  missoesCompletadas Int      @default(0)
+  danoBossTotal      Int      @default(0)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([usuarioId, semanaInicio])
+  @@map("estatisticas_semanais")
+}
