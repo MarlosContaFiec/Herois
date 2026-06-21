@@ -1,0 +1,60 @@
+{
+  "name": "herois",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Muddykikoki/Herois#readme",
+  "bugs": {
+    "url": "https://github.com/Muddykikoki/Herois/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Muddykikoki/Herois.git"
+  },
+  "license": "ISC",
+  "author": "Marlos",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "genPrisma": "npx prisma generate",
+    "pushPrisma": "npx prisma db push",
+    "runner": "nodemon --exec tsx src/server.js",
+    "dev": "npm run genPrisma && npm run pushPrisma && npm run runner",
+    "dev:f": "npm run runner",
+    "db:export": "node scripts/export.js",
+    "db:seed": "node prisma/seed.js",
+    "lint": "eslint .",
+    "debug:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "debug": "npm run format && npm run lint",
+    "type": "tsx watch src/server.js",
+    "seed": "tsx prisma/seed.ts",
+    "studio": "npx prisma studio",
+    "postinstall": "npx prisma generate"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.2",
+    "eslint": "^10.5.0",
+    "globals": "^17.6.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.4",
+    "prisma": "^6.19.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
