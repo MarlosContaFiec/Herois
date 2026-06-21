@@ -86,6 +86,8 @@ model Usuario {
   tituloAtivoId     String?
   sequenciaLogin    Int          @default(0)
   ultimoLogin       DateTime?
+  ultimoClaimStreak DateTime?
+  escudos           Int          @default(0)
 
   tituloAtivo       Titulo?          @relation("TituloAtivo", fields: [tituloAtivoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   cartas            CartaUsuario[]
