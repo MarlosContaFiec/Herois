@@ -37,13 +37,20 @@ export async function login({ email, senha }) {
   hoje.setHours(0, 0, 0, 0);
 
   let novaSequencia = usuario.sequenciaLogin;
+  let escudosAtualizados = usuario.escudos;
+
   if (usuario.ultimoLogin) {
     const ultimo = new Date(usuario.ultimoLogin);
     ultimo.setHours(0, 0, 0, 0);
     const diffDias = Math.floor((hoje - ultimo) / (1000 * 60 * 60 * 24));
 
-    if (diffDias === 1) novaSequencia += 1;
-    else if (diffDias > 1) novaSequencia = 1;
+    if (diffDias === 1) {
+      novaSequencia += 1;
+    } else if (diffDias === 2 && usuario.escudos > 0) {
+      escudosAtualizados = usuario.escudos - 1;
+    } else if (diffDias > 1) {
+      novaSequencia = 1;
+    }
   } else {
     novaSequencia = 1;
   }
@@ -51,6 +58,7 @@ export async function login({ email, senha }) {
   await usuarioRepo.atualizar(usuario.id, {
     sequenciaLogin: novaSequencia,
     ultimoLogin: new Date(),
+    escudos: escudosAtualizados,
   });
 
   const token = gerarToken({ id: usuario.id, papel: usuario.papel });
@@ -65,6 +73,7 @@ export async function login({ email, senha }) {
       nivel: usuario.nivel,
       experiencia: usuario.experiencia,
       sequenciaLogin: novaSequencia,
+      escudos: escudosAtualizados,
     },
     token,
   };
