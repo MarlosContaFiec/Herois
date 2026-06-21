@@ -1,0 +1,37 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useLogin } from '../api/auth';
+import { inputBase, btnPrimary, cardBase, labelBase, textSecondary } from '../styles/components';
+import { IconMissoes } from '../utils/icones';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const login = useLogin();
+  const handleSubmit = (e) => { e.preventDefault(); login.mutate({ email, senha }); };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className={`${cardBase} w-full max-w-md p-8`}>
+        <div className="text-center mb-8">
+          <IconMissoes size={40} className="text-cyan-400 mx-auto mb-3" />
+          <h1 className="text-2xl font-bold text-slate-100">Entrar</h1>
+          <p className={`${textSecondary} text-sm mt-1`}>Acesse sua conta</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className={labelBase}>Email</label>
+            <input type="email" className={inputBase} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" required />
+          </div>
+          <div>
+            <label className={labelBase}>Senha</label>
+            <input type="password" className={inputBase} value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="••••••" required />
+          </div>
+          <button type="submit" disabled={login.isPending} className={`${btnPrimary} w-full`}>{login.isPending ? 'Entrando...' : 'Entrar'}</button>
+        </form>
+        <p className={`${textSecondary} text-center text-sm mt-6`}>Não tem conta? <Link to="/registrar" className="text-cyan-400 hover:text-cyan-300">Registre-se</Link></p>
+      </motion.div>
+    </div>
+  );
+}
