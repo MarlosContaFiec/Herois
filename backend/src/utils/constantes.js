@@ -1,52 +1,68 @@
-export const ORDEM_RARIDADE = ['COMUM', 'INCOMUM', 'RARA', 'EPICA', 'LENDARIA', 'UNICA'];
+export const ORDEM_RARIDADE = [
+  "COMUM",
+  "INCOMUM",
+  "RARA",
+  "EPICA",
+  "LENDARIA",
+  "UNICA",
+];
 
 export const FAIXA_PODER = {
-  COMUM:    { min: 10,  max: 50 },
-  INCOMUM:  { min: 51,  max: 120 },
-  RARA:     { min: 121, max: 250 },
-  EPICA:    { min: 251, max: 400 },
+  COMUM: { min: 10, max: 50 },
+  INCOMUM: { min: 51, max: 120 },
+  RARA: { min: 121, max: 250 },
+  EPICA: { min: 251, max: 400 },
   LENDARIA: { min: 401, max: 500 },
-  UNICA:    { min: 500, max: 600 },
+  UNICA: { min: 500, max: 600 },
 };
 
 export const CUSTO_CRIACAO = {
-  COMUM:    100,
-  INCOMUM:  500,
-  RARA:     2000,
-  EPICA:    8000,
+  COMUM: 100,
+  INCOMUM: 500,
+  RARA: 2000,
+  EPICA: 8000,
   LENDARIA: 25000,
-  UNICA:    50000,
+  UNICA: 50000,
 };
 
 export const CUSTO_EVOLUCAO = {
-  COMUM:    200,
-  INCOMUM:  1000,
-  RARA:     5000,
-  EPICA:    20000,
+  COMUM: 200,
+  INCOMUM: 1000,
+  RARA: 5000,
+  EPICA: 20000,
   LENDARIA: 100000,
 };
 
 export const XP_POR_NIVEL = [100, 150, 225, 325, 450, 600, 775, 900, 1000];
 
-export const MULTIPLICADOR_EVOLUCAO = 1.10;
+export const MULTIPLICADOR_EVOLUCAO = 1.1;
 
 export const VANTAGEM = {
-  FOGO:   'VENTO',
-  VENTO:  'TERRA',
-  TERRA:  'AGUA',
-  AGUA:   'FOGO',
-  LUZ:    'TREVAS',
-  TREVAS: 'LUZ',
+  FOGO: "VENTO",
+  VENTO: "TERRA",
+  TERRA: "AGUA",
+  AGUA: "FOGO",
+  LUZ: "TREVAS",
+  TREVAS: "LUZ",
 };
 
-export const ELEMENTOS = ['FOGO', 'AGUA', 'TERRA', 'VENTO', 'LUZ', 'TREVAS'];
+export const ELEMENTOS = ["FOGO", "AGUA", "TERRA", "VENTO", "LUZ", "TREVAS"];
 
 export const TRINCO_CLASSE = {
-  GUERREIRO:   { tipo: 'PODER',   descricao: '+15% poder',           valor: 0.15 },
-  MAGO:        { tipo: 'MOEDAS',  descricao: '+100% moedas',        valor: 1.00 },
-  PATRULHEIRO: { tipo: 'TEMPO',   descricao: '-20% tempo',          valor: 0.20 },
-  CURANDEIRO:  { tipo: 'DROP',    descricao: '25% recompensa especial', valor: 0.25 },
-  LADINO:      { tipo: 'HIBRIDO', descricao: '+50% moedas, -10% tempo', valorMoedas: 0.50, valorTempo: 0.10 },
+  GUERREIRO: { tipo: "PODER", descricao: "+15% poder", valor: 0.15 },
+  MAGO: { tipo: "MOEDAS", descricao: "+100% moedas", valor: 1.0 },
+  PATRULHEIRO: { tipo: "TEMPO", descricao: "-20% tempo", valor: 0.2 },
+  CURANDEIRO: {
+    tipo: "DROP",
+    descricao: "25% recompensa especial",
+    valor: 0.25,
+  },
+  LADINO: {
+    tipo: "HIBRIDO",
+    descricao: "+50% moedas, -10% tempo",
+    valorMoedas: 0.5,
+    valorTempo: 0.1,
+  },
 };
 
 export function multiplicadorElemental(elementoAtacante, elementoDefensor) {
@@ -62,11 +78,11 @@ export function raridadeEfetiva(raridadeBase, contagemEvoluida) {
 }
 
 export function sufixoEvolucao(contagemEvoluida) {
-  if (contagemEvoluida === 0) return '';
-  if (contagemEvoluida === 1) return ' +';
-  if (contagemEvoluida === 2) return ' ++';
-  if (contagemEvoluida === 3) return ' +++';
-  return ' #';
+  if (contagemEvoluida === 0) return "";
+  if (contagemEvoluida === 1) return " +";
+  if (contagemEvoluida === 2) return " ++";
+  if (contagemEvoluida === 3) return " +++";
+  return " #";
 }
 
 export function nomeEfetivo(nomeCarta, contagemEvoluida) {
@@ -99,17 +115,20 @@ export function multiplicadorTaxaDiaria(criacoesHoje) {
 
 export function custoCriacaoCarta(raridade, criacoesHoje) {
   const base = CUSTO_CRIACAO[raridade];
-  if (!base) throw new Error('Raridade inválida');
+  if (!base) throw new Error("Raridade inválida");
   return Math.ceil(base * multiplicadorTaxaDiaria(criacoesHoje));
 }
 
-export function custoBooster(qtdCartas, pComum, pIncomum, pRara, pEpica, pLendaria) {
-  const multiplicador = (
-    pComum    * 1 +
-    pIncomum  * 2 +
-    pRara     * 5 +
-    pEpica    * 12 +
-    pLendaria * 30
-  ) / 100;
+export function custoBooster(
+  qtdCartas,
+  pComum,
+  pIncomum,
+  pRara,
+  pEpica,
+  pLendaria,
+) {
+  const multiplicador =
+    (pComum * 1 + pIncomum * 2 + pRara * 5 + pEpica * 12 + pLendaria * 30) /
+    100;
   return Math.ceil(qtdCartas * 50 * multiplicador);
 }
