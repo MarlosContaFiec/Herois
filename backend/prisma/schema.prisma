@@ -65,6 +65,7 @@ enum StatusListagem {
 enum ResultadoMissao {
   VITORIA
   DERROTA
+  EM_ANDAMENTO
 }
 
 enum TipoOferta {
@@ -129,11 +130,25 @@ model Carta {
   criador       Usuario?       @relation("CriadorCarta", fields: [criadorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   pacoteUnico   Pacote?        @relation("CartaUnicaPacote", fields: [pacoteUnicoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   cartasUsuario CartaUsuario[]
-
+  pacotesCarta CartaPacote[]
   criadoEm      DateTime       @default(now())
 
   @@index([elemento, classe, raridade])
   @@map("cartas")
+}
+
+model OfertaTrocaCarta {
+  id              String       @id @default(cuid()) @map("_id")
+  ofertaId        String
+  cartaUsuarioId  String
+
+  oferta          OfertaTroca  @relation(fields: [ofertaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cartaUsuario    CartaUsuario @relation(fields: [cartaUsuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm        DateTime     @default(now())
+
+  @@unique([ofertaId, cartaUsuarioId])
+  @@map("ofertas_troca_carta")
 }
 
 model CartaUsuario {
@@ -144,12 +159,11 @@ model CartaUsuario {
   nivel            Int    @default(1)
   contagemEvoluida Int    @default(0)
   serieEvolucao    Int?
-
+  favorito         Boolean @default(false)
   usuario           Usuario       @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   carta             Carta         @relation(fields: [cartaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   listagens         ListagemTroca[]
-  ofertasOferecidas OfertaTroca[] @relation("OfertaCarta")
-
+  cartasOfertadas OfertaTrocaCarta[]
   adquiridoEm       DateTime      @default(now())
 
   @@unique([usuarioId, cartaId])
@@ -225,7 +239,7 @@ model Pacote {
   pesoLendaria        Float   @default(1)
 
   condicaoDesbloqueio String?
-
+  cartasPacote CartaPacote[]
   pacotePai      Pacote?        @relation("PacoteUpgrade", fields: [pacotePaiId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   upgrades       Pacote[]       @relation("PacoteUpgrade")
   cartasUnicas   Carta[]        @relation("CartaUnicaPacote")
@@ -328,13 +342,12 @@ model TentativaMissao {
   missaoId     String
   cartasUsadas String
   trioClasse   Boolean         @default(false)
-  resultado    ResultadoMissao
   moedasGanhas Int             @default(0)
   expGanha     Int             @default(0)
   tempoGasto   Int
   iniciadoEm   DateTime        @default(now())
   completadoEm DateTime?
-
+  resultado    ResultadoMissao @default(EM_ANDAMENTO)
   usuario  Usuario @relation(fields: [usuarioId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   missao   Missao  @relation(fields: [missaoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -504,15 +517,13 @@ model OfertaTroca {
   ofertanteId     String
   tipoOferta      TipoOferta
   ofertaMoedas    Int?
-  ofertaCartaId   String?
   ofertaPacoteId  String?
   ofertaTituloId  String?
   status          String     @default("PENDENTE")
-
   sessao       SessaoTroca    @relation(fields: [sessaoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   listagem     ListagemTroca  @relation(fields: [listagemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ofertante    Usuario        @relation("CriadorOferta", fields: [ofertanteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ofertaCarta  CartaUsuario?  @relation("OfertaCarta", fields: [ofertaCartaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cartasOfertadas OfertaTrocaCarta[]
   ofertaPacote PacoteUsuario? @relation("OfertaPacote", fields: [ofertaPacoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ofertaTitulo TituloUsuario? @relation("OfertaTitulo", fields: [ofertaTituloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -535,4 +546,18 @@ model EstatisticaSemanal {
 
   @@unique([usuarioId, semanaInicio])
   @@map("estatisticas_semanais")
+}
+
+model CartaPacote {
+  id       String @id @default(cuid()) @map("_id")
+  cartaId  String
+  pacoteId String
+
+  carta    Carta  @relation(fields: [cartaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pacote   Pacote @relation(fields: [pacoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  criadoEm DateTime @default(now())
+
+  @@unique([cartaId, pacoteId])
+  @@map("cartas_pacote")
 }
