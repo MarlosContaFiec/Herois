@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const contagemHoje = (usuarioId) => {
   const inicio = new Date();
@@ -11,8 +11,7 @@ export const contagemHoje = (usuarioId) => {
   });
 };
 
-export const registrar = (data) =>
-  prisma.criacaoCartaDiaria.create({ data });
+export const registrar = (data) => prisma.criacaoCartaDiaria.create({ data });
 
 export const criarCarta = (data) =>
   prisma.carta.create({

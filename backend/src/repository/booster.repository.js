@@ -1,9 +1,9 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const listarTodos = () =>
   prisma.booster.findMany({
     include: { criador: { select: { id: true, nomeUsuario: true } } },
-    orderBy: { criadoEm: 'desc' },
+    orderBy: { criadoEm: "desc" },
   });
 
 export const encontrarPorId = (id) =>

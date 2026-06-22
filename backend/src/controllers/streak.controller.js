@@ -1,4 +1,4 @@
-import * as streakService from '../services/streak.service.js';
+import * as streakService from "../services/streak.service.js";
 
 export async function obterStatus(req, res) {
   try {

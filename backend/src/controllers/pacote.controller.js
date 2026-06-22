@@ -1,4 +1,4 @@
-import * as pacoteService from '../services/pacote.service.js';
+import * as pacoteService from "../services/pacote.service.js";
 
 export async function listar(req, res) {
   try {
@@ -20,7 +20,10 @@ export async function encontrarPorId(req, res) {
 
 export async function comprar(req, res) {
   try {
-    const resultado = await pacoteService.comprar(req.usuario.id, req.validado.params.id);
+    const resultado = await pacoteService.comprar(
+      req.usuario.id,
+      req.validado.params.id,
+    );
     return res.json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });
@@ -29,7 +32,10 @@ export async function comprar(req, res) {
 
 export async function obterPity(req, res) {
   try {
-    const resultado = await pacoteService.obterPity(req.usuario.id, req.validado.params.id);
+    const resultado = await pacoteService.obterPity(
+      req.usuario.id,
+      req.validado.params.id,
+    );
     return res.json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });
@@ -40,7 +46,11 @@ export async function resgatarPity(req, res) {
   try {
     const { id } = req.validado.params;
     const { cartaId } = req.validado.body;
-    const resultado = await pacoteService.resgatarPity(req.usuario.id, id, cartaId);
+    const resultado = await pacoteService.resgatarPity(
+      req.usuario.id,
+      id,
+      cartaId,
+    );
     return res.json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });

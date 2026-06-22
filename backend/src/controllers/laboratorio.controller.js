@@ -1,4 +1,4 @@
-import * as labService from '../services/laboratorio.service.js';
+import * as labService from "../services/laboratorio.service.js";
 
 export async function listar(req, res) {
   try {
@@ -29,7 +29,10 @@ export async function remover(req, res) {
 
 export async function transferir(req, res) {
   try {
-    const resultado = await labService.transferir(req.usuario.id, req.validado.params.id);
+    const resultado = await labService.transferir(
+      req.usuario.id,
+      req.validado.params.id,
+    );
     return res.json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });

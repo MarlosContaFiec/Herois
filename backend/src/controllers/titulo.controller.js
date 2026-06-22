@@ -1,4 +1,4 @@
-import * as tituloService from '../services/titulo.service.js';
+import * as tituloService from "../services/titulo.service.js";
 
 export async function listarTodos(req, res) {
   try {
@@ -20,7 +20,10 @@ export async function listarDoUsuario(req, res) {
 
 export async function equipar(req, res) {
   try {
-    const resultado = await tituloService.equipar(req.usuario.id, req.validado.params.id);
+    const resultado = await tituloService.equipar(
+      req.usuario.id,
+      req.validado.params.id,
+    );
     return res.json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });

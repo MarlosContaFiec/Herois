@@ -1,8 +1,11 @@
-import * as sessaoService from '../services/sessaoTroca.service.js';
+import * as sessaoService from "../services/sessaoTroca.service.js";
 
 export async function iniciar(req, res) {
   try {
-    const sessao = await sessaoService.iniciar(req.usuario.id, req.validado.params.id);
+    const sessao = await sessaoService.iniciar(
+      req.usuario.id,
+      req.validado.params.id,
+    );
     return res.status(201).json(sessao);
   } catch (err) {
     return res.status(400).json({ erro: err.message });

@@ -1,9 +1,13 @@
-import * as authService from '../services/auth.service.js';
+import * as authService from "../services/auth.service.js";
 
 export async function registrar(req, res) {
   try {
     const { nomeUsuario, email, senha } = req.validado.body;
-    const resultado = await authService.registrar({ nomeUsuario, email, senha });
+    const resultado = await authService.registrar({
+      nomeUsuario,
+      email,
+      senha,
+    });
     return res.status(201).json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });

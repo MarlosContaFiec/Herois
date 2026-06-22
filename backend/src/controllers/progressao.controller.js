@@ -1,4 +1,4 @@
-import * as progressaoService from '../services/progressao.service.js';
+import * as progressaoService from "../services/progressao.service.js";
 
 export async function obterProgressao(req, res) {
   try {
@@ -11,7 +11,9 @@ export async function obterProgressao(req, res) {
 
 export async function verificarDesbloqueios(req, res) {
   try {
-    const desbloqueios = await progressaoService.verificarDesbloqueios(req.usuario.id);
+    const desbloqueios = await progressaoService.verificarDesbloqueios(
+      req.usuario.id,
+    );
     return res.json(desbloqueios);
   } catch (err) {
     return res.status(500).json({ erro: err.message });

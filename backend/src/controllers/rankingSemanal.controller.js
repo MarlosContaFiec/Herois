@@ -1,4 +1,4 @@
-import * as rankingService from '../services/rankingSemanal.service.js';
+import * as rankingService from "../services/rankingSemanal.service.js";
 
 export async function obterRanking(req, res) {
   try {

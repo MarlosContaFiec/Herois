@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const encontrarCartaUsuario = (usuarioId, cartaId) =>
   prisma.cartaUsuario.findUnique({
@@ -10,7 +10,7 @@ export const listarColecao = (usuarioId) =>
   prisma.cartaUsuario.findMany({
     where: { usuarioId },
     include: { carta: true },
-    orderBy: { adquiridoEm: 'desc' },
+    orderBy: { adquiridoEm: "desc" },
   });
 
 export const adicionarCarta = (usuarioId, cartaId) =>

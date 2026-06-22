@@ -1,7 +1,7 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const listarTodos = () =>
-  prisma.pacote.findMany({ orderBy: { custo: 'asc' } });
+  prisma.pacote.findMany({ orderBy: { custo: "asc" } });
 
 export const encontrarPorId = (id) =>
   prisma.pacote.findUnique({ where: { id } });
@@ -9,8 +9,7 @@ export const encontrarPorId = (id) =>
 export const contarAberturas = (usuarioId, pacoteId) =>
   prisma.compraPacote.count({ where: { usuarioId, pacoteId } });
 
-export const criarCompra = (data) =>
-  prisma.compraPacote.create({ data });
+export const criarCompra = (data) => prisma.compraPacote.create({ data });
 
 export const encontrarCartaPorId = (id) =>
   prisma.carta.findUnique({ where: { id } });
@@ -36,3 +35,9 @@ export const encontrarTituloAtivo = async (usuarioId) => {
   });
   return usuario?.tituloAtivo;
 };
+
+export const listarCartasPorPacote = (pacoteId) =>
+  prisma.cartaPacote.findMany({
+    where: { pacoteId },
+    include: { carta: true },
+  });

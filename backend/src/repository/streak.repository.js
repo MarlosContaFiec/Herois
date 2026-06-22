@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const encontrarUsuario = (id) =>
   prisma.usuario.findUnique({ where: { id } });
@@ -24,7 +24,10 @@ export const atualizarCartaUsuario = (id, data) =>
   prisma.cartaUsuario.update({ where: { id }, data, include: { carta: true } });
 
 export const encontrarUserPacks = () =>
-  prisma.pacote.findMany({ where: { secreto: false, unico: false }, orderBy: { custo: 'asc' } });
+  prisma.pacote.findMany({
+    where: { secreto: false, unico: false },
+    orderBy: { custo: "asc" },
+  });
 
 export const criarPacoteUsuario = (data) =>
   prisma.pacoteUsuario.create({ data });

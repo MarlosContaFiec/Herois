@@ -1,31 +1,54 @@
-import * as missaoService from '../services/missao.service.js';
+import * as missaoService from "../services/missao.service.js";
 
 export async function listar(req, res) {
   try {
-    const elemento = req.validado?.query?.elemento;
+    const { elemento } = req.query;
     const missoes = await missaoService.listar(elemento);
-    return res.json(missoes);
+    res.json(missoes);
   } catch (err) {
-    return res.status(500).json({ erro: err.message });
+    res.status(500).json({ erro: err.message });
   }
 }
 
 export async function encontrarPorId(req, res) {
   try {
     const missao = await missaoService.encontrarPorId(req.params.id);
-    return res.json(missao);
+    res.json(missao);
   } catch (err) {
-    return res.status(404).json({ erro: err.message });
+    res.status(404).json({ erro: err.message });
   }
 }
 
-export async function enfrentar(req, res) {
+export async function pendente(req, res) {
   try {
-    const { id } = req.validado.params;
-    const { cartasUsuarioIds } = req.validado.body;
-    const resultado = await missaoService.enfrentar(req.usuario.id, id, cartasUsuarioIds);
-    return res.json(resultado);
+    const tentativa = await missaoService.tentativaPendente(req.usuario.id);
+    res.json(tentativa || null);
   } catch (err) {
-    return res.status(400).json({ erro: err.message });
+    res.status(500).json({ erro: err.message });
+  }
+}
+
+export async function iniciar(req, res) {
+  try {
+    const { id } = req.params;
+    const { cartasUsuarioIds } = req.body;
+    const resultado = await missaoService.iniciar(
+      req.usuario.id,
+      id,
+      cartasUsuarioIds,
+    );
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ erro: err.message });
+  }
+}
+
+export async function resolver(req, res) {
+  try {
+    const { tentativaId } = req.params;
+    const resultado = await missaoService.resolver(req.usuario.id, tentativaId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ erro: err.message });
   }
 }

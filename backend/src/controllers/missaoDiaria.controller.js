@@ -1,4 +1,4 @@
-import * as missaoDiariaService from '../services/missaoDiaria.service.js';
+import * as missaoDiariaService from "../services/missaoDiaria.service.js";
 
 export async function obterStatus(req, res) {
   try {
@@ -12,7 +12,10 @@ export async function obterStatus(req, res) {
 export async function enfrentar(req, res) {
   try {
     const { cartasUsuarioIds } = req.validado.body;
-    const resultado = await missaoDiariaService.enfrentar(req.usuario.id, cartasUsuarioIds);
+    const resultado = await missaoDiariaService.enfrentar(
+      req.usuario.id,
+      cartasUsuarioIds,
+    );
     return res.json(resultado);
   } catch (err) {
     return res.status(400).json({ erro: err.message });
