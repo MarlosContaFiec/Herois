@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const encontrarTentativaHoje = (usuarioId, inicio, fim) =>
   prisma.tentativaDiaria.findFirst({
@@ -8,13 +8,18 @@ export const encontrarTentativaHoje = (usuarioId, inicio, fim) =>
     },
   });
 
-export const criarTentativa = (data) =>
-  prisma.tentativaDiaria.create({ data });
+export const criarTentativa = (data) => prisma.tentativaDiaria.create({ data });
 
 export const encontrarUsuario = (id) =>
   prisma.usuario.findUnique({
     where: { id },
-    include: { tituloAtivo: true, cartas: { include: { carta: true }, orderBy: { carta: { poder: 'desc' } } } },
+    include: {
+      tituloAtivo: true,
+      cartas: {
+        include: { carta: true },
+        orderBy: { carta: { poder: "desc" } },
+      },
+    },
   });
 
 export const encontrarCartaUsuario = (id) =>

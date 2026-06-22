@@ -1,14 +1,24 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const criar = (data) =>
-  prisma.guilda.create({ data, include: { membros: true, criador: { select: { id: true, nomeUsuario: true } } } });
+  prisma.guilda.create({
+    data,
+    include: {
+      membros: true,
+      criador: { select: { id: true, nomeUsuario: true } },
+    },
+  });
 
 export const encontrarPorId = (id) =>
   prisma.guilda.findUnique({
     where: { id },
     include: {
       criador: { select: { id: true, nomeUsuario: true } },
-      membros: { include: { usuario: { select: { id: true, nomeUsuario: true, nivel: true } } } },
+      membros: {
+        include: {
+          usuario: { select: { id: true, nomeUsuario: true, nivel: true } },
+        },
+      },
     },
   });
 
@@ -21,7 +31,7 @@ export const listarTodas = () =>
       criador: { select: { id: true, nomeUsuario: true } },
       membros: { select: { id: true } },
     },
-    orderBy: { criadoEm: 'desc' },
+    orderBy: { criadoEm: "desc" },
   });
 
 export const encontrarMembro = (usuarioId) =>
@@ -30,8 +40,7 @@ export const encontrarMembro = (usuarioId) =>
     include: { guilda: true },
   });
 
-export const criarMembro = (data) =>
-  prisma.membroGuilda.create({ data });
+export const criarMembro = (data) => prisma.membroGuilda.create({ data });
 
 export const removerMembro = (usuarioId) =>
   prisma.membroGuilda.delete({ where: { usuarioId } });
@@ -45,8 +54,7 @@ export const atualizarGuilda = (id, data) =>
 export const contarMembros = (guildaId) =>
   prisma.membroGuilda.count({ where: { guildaId } });
 
-export const criarPedido = (data) =>
-  prisma.pedidoGuilda.create({ data });
+export const criarPedido = (data) => prisma.pedidoGuilda.create({ data });
 
 export const encontrarPedido = (guildaId, usuarioId) =>
   prisma.pedidoGuilda.findUnique({
@@ -55,8 +63,10 @@ export const encontrarPedido = (guildaId, usuarioId) =>
 
 export const listarPedidos = (guildaId) =>
   prisma.pedidoGuilda.findMany({
-    where: { guildaId, status: 'PENDENTE' },
-    include: { usuario: { select: { id: true, nomeUsuario: true, nivel: true } } },
+    where: { guildaId, status: "PENDENTE" },
+    include: {
+      usuario: { select: { id: true, nomeUsuario: true, nivel: true } },
+    },
   });
 
 export const atualizarPedido = (id, data) =>
@@ -68,5 +78,21 @@ export const encontrarPedidoPorId = (id) =>
     include: { usuario: true },
   });
 
-export const deletar = (id) =>
-  prisma.guilda.delete({ where: { id } });
+export const deletar = (id) => prisma.guilda.delete({ where: { id } });
+
+export const encontrarMinhaGuilda = (usuarioId) =>
+  prisma.membroGuilda.findUnique({
+    where: { usuarioId },
+    include: {
+      guilda: {
+        include: {
+          criador: { select: { id: true, nomeUsuario: true } },
+          membros: {
+            include: {
+              usuario: { select: { id: true, nomeUsuario: true, nivel: true } },
+            },
+          },
+        },
+      },
+    },
+  });
