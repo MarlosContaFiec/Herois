@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 export const encontrarSessaoAtiva = (guildaId) =>
   prisma.sessaoTroca.findFirst({
@@ -11,7 +11,9 @@ export const encontrarSessaoAtiva = (guildaId) =>
           ofertas: {
             include: {
               ofertante: { select: { id: true, nomeUsuario: true } },
-              ofertaCarta: { include: { carta: true } },
+              cartasOfertadas: {
+                include: { cartaUsuario: { include: { carta: true } } },
+              },
             },
           },
         },
@@ -23,7 +25,10 @@ export const encontrarSessaoAtiva = (guildaId) =>
 export const criarSessao = (data) =>
   prisma.sessaoTroca.create({
     data,
-    include: { guilda: true, iniciadaPor: { select: { id: true, nomeUsuario: true } } },
+    include: {
+      guilda: true,
+      iniciadaPor: { select: { id: true, nomeUsuario: true } },
+    },
   });
 
 export const encontrarPorId = (id) =>
@@ -37,7 +42,9 @@ export const encontrarPorId = (id) =>
           ofertas: {
             include: {
               ofertante: { select: { id: true, nomeUsuario: true } },
-              ofertaCarta: { include: { carta: true } },
+              cartasOfertadas: {
+                include: { cartaUsuario: { include: { carta: true } } },
+              },
             },
           },
         },
@@ -64,7 +71,13 @@ export const encontrarListagem = (id) =>
     include: {
       cartaUsuario: { include: { carta: true } },
       usuario: true,
-      ofertas: true,
+      ofertas: {
+        include: {
+          cartasOfertadas: {
+            include: { cartaUsuario: { include: { carta: true } } },
+          },
+        },
+      },
     },
   });
 
@@ -77,13 +90,20 @@ export const criarOferta = (data) =>
     include: { ofertante: { select: { id: true, nomeUsuario: true } } },
   });
 
+export const criarOfertaCarta = (data) =>
+  prisma.ofertaTrocaCarta.create({ data });
+
 export const encontrarOferta = (id) =>
   prisma.ofertaTroca.findUnique({
     where: { id },
     include: {
-      listagem: { include: { cartaUsuario: true, usuario: true } },
+      listagem: {
+        include: { cartaUsuario: { include: { carta: true } }, usuario: true },
+      },
       ofertante: true,
-      ofertaCarta: { include: { carta: true } },
+      cartasOfertadas: {
+        include: { cartaUsuario: { include: { carta: true } } },
+      },
       ofertaPacote: { include: { pacote: true } },
       ofertaTitulo: { include: { titulo: true } },
     },

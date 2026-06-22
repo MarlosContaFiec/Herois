@@ -1,28 +1,68 @@
-import * as colecaoService from '../services/colecao.service.js';
+import * as colecaoService from "../services/colecao.service.js";
 
 export async function listarColecao(req, res) {
   try {
-    const colecao = await colecaoService.listarColecao(req.usuario.id);
-    return res.json(colecao);
+    const cartas = await colecaoService.listarColecao(req.usuario.id);
+    res.json(cartas);
   } catch (err) {
-    return res.status(500).json({ erro: err.message });
+    res.status(500).json({ erro: err.message });
   }
 }
 
 export async function adicionarCarta(req, res) {
   try {
-    const cartaUsuario = await colecaoService.adicionarCarta(req.usuario.id, req.validado.params.cartaId);
-    return res.status(201).json(cartaUsuario);
+    const { cartaId } = req.params;
+    const { pacoteId } = req.body;
+    const resultado = await colecaoService.adicionarCarta(
+      req.usuario.id,
+      cartaId,
+      pacoteId,
+    );
+    res.status(201).json(resultado);
   } catch (err) {
-    return res.status(400).json({ erro: err.message });
+    const status =
+      err.message.includes("insuficientes") || err.message.includes("ja possui")
+        ? 400
+        : 404;
+    res.status(status).json({ erro: err.message });
   }
 }
 
 export async function removerCarta(req, res) {
   try {
-    await colecaoService.removerCarta(req.usuario.id, req.validado.params.cartaId);
-    return res.status(204).send();
+    const { cartaId } = req.params;
+    const resultado = await colecaoService.removerCarta(
+      req.usuario.id,
+      cartaId,
+    );
+    res.json(resultado);
   } catch (err) {
-    return res.status(400).json({ erro: err.message });
+    res.status(404).json({ erro: err.message });
+  }
+}
+
+export async function favoritarCarta(req, res) {
+  try {
+    const { cartaId } = req.params;
+    const resultado = await colecaoService.favoritarCarta(
+      req.usuario.id,
+      cartaId,
+    );
+    res.json(resultado);
+  } catch (err) {
+    res.status(404).json({ erro: err.message });
+  }
+}
+
+export async function detalhesCarta(req, res) {
+  try {
+    const { cartaId } = req.params;
+    const resultado = await colecaoService.detalhesCarta(
+      req.usuario.id,
+      cartaId,
+    );
+    res.json(resultado);
+  } catch (err) {
+    res.status(404).json({ erro: err.message });
   }
 }
