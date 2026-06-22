@@ -1,4 +1,9 @@
-import { skeleton, skeletonText, skeletonCard, skeletonCircle } from '../styles/components';
+import {
+  skeleton,
+  skeletonText,
+  skeletonCard,
+  skeletonCircle,
+} from "../styles/components";
 
 export function SkeletonCard() {
   return (

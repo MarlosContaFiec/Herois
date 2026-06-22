@@ -1,4 +1,8 @@
-import { emptyState, emptyStateTitle, emptyStateDesc } from '../styles/components';
+import {
+  emptyState,
+  emptyStateTitle,
+  emptyStateDesc,
+} from "../styles/components";
 
 export default function EmptyState({ icone: Icone, titulo, descricao }) {
   return (
