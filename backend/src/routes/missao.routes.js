@@ -1,13 +1,17 @@
-import { Router } from 'express';
-import autenticar from '../middlewares/autenticar.js';
-import validar from '../middlewares/validar.js';
-import * as missaoSchema from '../schemas/missao.schema.js';
-import * as missaoController from '../controllers/missao.controller.js';
+import { Router } from "express";
+import autenticar from "../middlewares/autenticar.js";
+import * as missaoController from "../controllers/missao.controller.js";
 
 const router = Router();
 
-router.get('/', autenticar, validar(missaoSchema.listar), missaoController.listar);
-router.get('/:id', autenticar, missaoController.encontrarPorId);
-router.post('/:id/enfrentar', autenticar, validar(missaoSchema.enfrentar), missaoController.enfrentar);
+router.get("/", missaoController.listar);
+router.get("/pendente", autenticar, missaoController.pendente);
+router.get("/:id", missaoController.encontrarPorId);
+router.post("/:id/iniciar", autenticar, missaoController.iniciar);
+router.post(
+  "/tentativa/:tentativaId/resolver",
+  autenticar,
+  missaoController.resolver,
+);
 
 export default router;

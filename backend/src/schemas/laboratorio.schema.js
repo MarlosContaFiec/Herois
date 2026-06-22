@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-const elementos = ['FOGO', 'AGUA', 'TERRA', 'VENTO', 'LUZ', 'TREVAS'];
-const classes = ['GUERREIRO', 'MAGO', 'PATRULHEIRO', 'CURANDEIRO', 'LADINO'];
-const raridades = ['COMUM', 'INCOMUM', 'RARA', 'EPICA', 'LENDARIA', 'UNICA'];
+const elementos = ["FOGO", "AGUA", "TERRA", "VENTO", "LUZ", "TREVAS"];
+const classes = ["GUERREIRO", "MAGO", "PATRULHEIRO", "CURANDEIRO", "LADINO"];
+const raridades = ["COMUM", "INCOMUM", "RARA", "EPICA", "LENDARIA", "UNICA"];
 
 export const criar = z.object({
   body: z.object({

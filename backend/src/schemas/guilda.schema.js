@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-const tiposEntrada = ['AUTOMATICO', 'PEDIDO', 'SOMENTE_CONVITE'];
+const tiposEntrada = ["AUTOMATICO", "PEDIDO", "SOMENTE_CONVITE"];
 
 export const criar = z.object({
   body: z.object({
@@ -40,14 +40,17 @@ export const promover = z.object({
   params: z.object({ id: z.string() }),
   body: z.object({
     usuarioId: z.string(),
-    papel: z.enum(['VICE', 'MEMBRO']),
+    papel: z.enum(["VICE", "MEMBRO"]),
   }),
 });
 
 export const agendar = z.object({
   params: z.object({ id: z.string() }),
   body: z.object({
-    horarioFixo: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+    horarioFixo: z
+      .string()
+      .regex(/^\d{2}:\d{2}$/)
+      .optional(),
     manual: z.boolean().optional(),
   }),
 });

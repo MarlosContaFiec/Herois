@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const comprar = z.object({
   params: z.object({ id: z.string() }),

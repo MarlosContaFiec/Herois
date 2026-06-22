@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const iniciar = z.object({
   params: z.object({ id: z.string() }),
@@ -24,9 +24,9 @@ export const fazerOferta = z.object({
   params: z.object({ sessaoId: z.string() }),
   body: z.object({
     listagemId: z.string(),
-    tipoOferta: z.enum(['MOEDAS', 'CARTA', 'PACOTE', 'TITULO']),
+    tipoOferta: z.enum(["MOEDAS", "CARTA", "PACOTE", "TITULO"]),
     ofertaMoedas: z.number().int().min(0).optional(),
-    ofertaCartaId: z.string().optional(),
+    cartasOfertadas: z.array(z.string()).min(0).max(5).optional(),
     ofertaPacoteId: z.string().optional(),
     ofertaTituloId: z.string().optional(),
   }),
