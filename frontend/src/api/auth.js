@@ -1,8 +1,8 @@
-import { useMutation } from '@tanstack/react-query';
-import api from '../config/axios';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
-import { useNavigate } from 'react-router-dom';
+import { useMutation } from "@tanstack/react-query";
+import api from "../config/axios";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { useNavigate } from "react-router-dom";
 
 export function useLogin() {
   const { login } = useAuth();
@@ -11,16 +11,16 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (dados) => {
-      const { data } = await api.post('/auth/login', dados);
+      const { data } = await api.post("/auth/login", dados);
       return data;
     },
     onSuccess: (data) => {
       login(data.token, data.usuario);
-      toast.success('Login realizado com sucesso!');
-      navigate('/');
+      toast.success("Login realizado com sucesso!");
+      navigate("/");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Erro ao fazer login');
+      toast.error(error.response?.data?.message || "Erro ao fazer login");
     },
   });
 }
@@ -32,16 +32,16 @@ export function useRegistrar() {
 
   return useMutation({
     mutationFn: async (dados) => {
-      const { data } = await api.post('/auth/registrar', dados);
+      const { data } = await api.post("/auth/registrar", dados);
       return data;
     },
     onSuccess: (data) => {
       login(data.token, data.usuario);
-      toast.success('Conta criada com sucesso!');
-      navigate('/');
+      toast.success("Conta criada com sucesso!");
+      navigate("/");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Erro ao registrar');
+      toast.error(error.response?.data?.message || "Erro ao registrar");
     },
   });
 }

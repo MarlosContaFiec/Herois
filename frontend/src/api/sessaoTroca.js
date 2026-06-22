@@ -1,70 +1,97 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../config/axios';
-import { useToast } from '../context/ToastContext';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "../config/axios";
+import { useToast } from "../context/ToastContext";
 
 export function useSessaoAtiva(guildaId) {
   return useQuery({
-    queryKey: ['sessao-troca', guildaId],
-    queryFn: () => api.get(`/sessao-troca/${guildaId}/ativa`).then((r) => r.data),
+    queryKey: ["sessao-troca", guildaId],
+    queryFn: () =>
+      api.get(`/sessao-troca/${guildaId}/ativa`).then((r) => r.data),
     enabled: !!guildaId,
+    retry: false,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 }
 
 export function useIniciarSessao() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   const toast = useToast();
 
   return useMutation({
-    mutationFn: (guildaId) => api.post(`/sessao-troca/${guildaId}/iniciar`).then((r) => r.data),
+    mutationFn: (guildaId) =>
+      api.post(`/sessao-troca/${guildaId}/iniciar`).then((r) => r.data),
     onSuccess: () => {
-      toast.sucesso('Sessão de troca iniciada! Duração: 30 minutos.');
-      qc.invalidateQueries({ queryKey: ['sessao-troca'] });
+      queryClient.invalidateQueries({ queryKey: ["sessao-troca"] });
+      toast.sucesso("Sessao de troca iniciada!");
     },
     onError: (err) => toast.erro(err.response?.data?.erro || err.message),
   });
 }
 
 export function useColocarVitrine() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   const toast = useToast();
 
   return useMutation({
     mutationFn: ({ sessaoId, cartaUsuarioId, precoPedido }) =>
-      api.post(`/sessao-troca/${sessaoId}/vitrine`, { cartaUsuarioId, precoPedido }).then((r) => r.data),
+      api
+        .post(`/sessao-troca/${sessaoId}/vitrine`, {
+          cartaUsuarioId,
+          precoPedido,
+        })
+        .then((r) => r.data),
     onSuccess: () => {
-      toast.sucesso('Carta colocada na vitrine!');
-      qc.invalidateQueries({ queryKey: ['sessao-troca'] });
+      queryClient.invalidateQueries({ queryKey: ["sessao-troca"] });
+      toast.sucesso("Carta colocada na vitrine!");
     },
     onError: (err) => toast.erro(err.response?.data?.erro || err.message),
   });
 }
 
 export function useFazerOferta() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   const toast = useToast();
 
   return useMutation({
-    mutationFn: ({ sessaoId, ...dados }) =>
-      api.post(`/sessao-troca/${sessaoId}/oferta`, dados).then((r) => r.data),
+    mutationFn: ({
+      sessaoId,
+      listagemId,
+      tipoOferta,
+      ofertaMoedas,
+      cartasOfertadas,
+    }) =>
+      api
+        .post(`/sessao-troca/${sessaoId}/oferta`, {
+          listagemId,
+          tipoOferta,
+          ofertaMoedas: ofertaMoedas || undefined,
+          cartasOfertadas: cartasOfertadas?.length
+            ? cartasOfertadas
+            : undefined,
+        })
+        .then((r) => r.data),
     onSuccess: () => {
-      toast.sucesso('Oferta enviada!');
-      qc.invalidateQueries({ queryKey: ['sessao-troca'] });
+      queryClient.invalidateQueries({ queryKey: ["sessao-troca"] });
+      toast.sucesso("Oferta enviada!");
     },
     onError: (err) => toast.erro(err.response?.data?.erro || err.message),
   });
 }
 
 export function useResponderOferta() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   const toast = useToast();
 
   return useMutation({
     mutationFn: ({ sessaoId, ofertaId, aceitar }) =>
-      api.put(`/sessao-troca/${sessaoId}/oferta`, { ofertaId, aceitar }).then((r) => r.data),
-    onSuccess: (data) => {
-      toast.sucesso(data.status === 'ACEITA' ? 'Oferta aceita!' : 'Oferta rejeitada.');
-      qc.invalidateQueries({ queryKey: ['sessao-troca'] });
-      qc.invalidateQueries({ queryKey: ['colecao'] });
+      api
+        .put(`/sessao-troca/${sessaoId}/oferta`, { ofertaId, aceitar })
+        .then((r) => r.data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["sessao-troca"] });
+      queryClient.invalidateQueries({ queryKey: ["colecao"] });
+      toast.sucesso(variables.aceitar ? "Oferta aceita!" : "Oferta rejeitada");
     },
     onError: (err) => toast.erro(err.response?.data?.erro || err.message),
   });
