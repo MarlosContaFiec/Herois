@@ -1,17 +1,57 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useColecao } from '../api/colecao';
-import { useMinhasEstatisticas } from '../api/ranking';
-import AnimatedPage from '../components/AnimatedPage';
-import { cardBase, cardHover, pageTitle, pageSubtitle, pageHeader, statCard, statValue, statLabel, gridCols3, textSecondary, fontSemibold } from '../styles/components';
-import { IconMoedas, IconStreak, IconMissoes, IconPoder, IconFechar, IconPacotes, IconDiaria, IconColecao, IconGuildas, IconBoss, IconRanking, IconCriar } from '../utils/icones';
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useColecao } from "../api/colecao";
+import { useMinhasEstatisticas } from "../api/ranking";
+import AnimatedPage from "../components/AnimatedPage";
+import EditarPerfilModal from "../components/EditarPerfilModal";
+import {
+  cardBase,
+  cardHover,
+  pageTitle,
+  pageSubtitle,
+  pageHeader,
+  statCard,
+  statValue,
+  statLabel,
+  gridCols3,
+  textSecondary,
+  fontSemibold,
+} from "../styles/components";
+import {
+  IconMoedas,
+  IconStreak,
+  IconMissoes,
+  IconPoder,
+  IconFechar,
+  IconPacotes,
+  IconConfig,
+  IconDiaria,
+  IconColecao,
+  IconGuildas,
+  IconBoss,
+  IconRanking,
+  IconCriar,
+} from "../utils/icones";
 
-const ELEMENTOS = ['FOGO', 'AGUA', 'TERRA', 'VENTO', 'LUZ', 'TREVAS'];
-const CLASSES = ['GUERREIRO', 'MAGO', 'PATRULHEIRO', 'CURANDEIRO', 'LADINO'];
-const EL_CORES = { FOGO: '#f87171', AGUA: '#60a5fa', TERRA: '#f59e0b', VENTO: '#34d399', LUZ: '#fde047', TREVAS: '#a78bfa' };
-const CL_CORES = { GUERREIRO: '#f87171', MAGO: '#818cf8', PATRULHEIRO: '#34d399', CURANDEIRO: '#fb923c', LADINO: '#94a3b8' };
+const ELEMENTOS = ["FOGO", "AGUA", "TERRA", "VENTO", "LUZ", "TREVAS"];
+const CLASSES = ["GUERREIRO", "MAGO", "PATRULHEIRO", "CURANDEIRO", "LADINO"];
+const EL_CORES = {
+  FOGO: "#f87171",
+  AGUA: "#60a5fa",
+  TERRA: "#f59e0b",
+  VENTO: "#34d399",
+  LUZ: "#fde047",
+  TREVAS: "#a78bfa",
+};
+const CL_CORES = {
+  GUERREIRO: "#f87171",
+  MAGO: "#818cf8",
+  PATRULHEIRO: "#34d399",
+  CURANDEIRO: "#fb923c",
+  LADINO: "#94a3b8",
+};
 
 function RadarGrafico({ chaves, dados, cores, labels }) {
   const n = chaves.length;
@@ -23,14 +63,18 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
   const angulo = (i) => -Math.PI / 2 + (2 * Math.PI * i) / n;
 
   if (!temDados) {
-    return <div className="flex items-center justify-center h-48 text-slate-500 text-sm">Nenhuma carta na coleção</div>;
+    return (
+      <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
+        Nenhuma carta na coleção
+      </div>
+    );
   }
 
   const pontosGrade = (nivel) =>
     Array.from({ length: n }, (_, i) => {
       const a = angulo(i);
       return `${cx + raio * nivel * Math.cos(a)},${cy + raio * nivel * Math.sin(a)}`;
-    }).join(' ');
+    }).join(" ");
 
   const pontosDados = dados
     .map((v, i) => {
@@ -38,7 +82,7 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
       const norm = v / maxVal;
       return `${cx + raio * norm * Math.cos(a)},${cy + raio * norm * Math.sin(a)}`;
     })
-    .join(' ');
+    .join(" ");
 
   return (
     <div>
@@ -53,14 +97,41 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
           </filter>
         </defs>
         {[0.2, 0.4, 0.6, 0.8, 1.0].map((nivel) => (
-          <polygon key={nivel} points={pontosGrade(nivel)} fill="none" stroke="#1e293b" strokeWidth="1" />
+          <polygon
+            key={nivel}
+            points={pontosGrade(nivel)}
+            fill="none"
+            stroke="#1e293b"
+            strokeWidth="1"
+          />
         ))}
         {Array.from({ length: n }, (_, i) => {
           const a = angulo(i);
-          return <line key={i} x1={cx} y1={cy} x2={cx + raio * Math.cos(a)} y2={cy + raio * Math.sin(a)} stroke="#1e293b" strokeWidth="1" />;
+          return (
+            <line
+              key={i}
+              x1={cx}
+              y1={cy}
+              x2={cx + raio * Math.cos(a)}
+              y2={cy + raio * Math.sin(a)}
+              stroke="#1e293b"
+              strokeWidth="1"
+            />
+          );
         })}
-        <polygon points={pontosGrade(1.0)} fill="none" stroke="#334155" strokeWidth="1.5" />
-        <polygon points={pontosDados} fill="rgba(6, 182, 212, 0.1)" stroke="#06b6d4" strokeWidth="2" filter="url(#glow)" />
+        <polygon
+          points={pontosGrade(1.0)}
+          fill="none"
+          stroke="#334155"
+          strokeWidth="1.5"
+        />
+        <polygon
+          points={pontosDados}
+          fill="rgba(6,182,212,0.1)"
+          stroke="#06b6d4"
+          strokeWidth="2"
+          filter="url(#glow)"
+        />
         {dados.map((v, i) => {
           const a = angulo(i);
           const norm = v / maxVal;
@@ -69,7 +140,14 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
           return (
             <g key={i}>
               <circle cx={x} cy={y} r="7" fill={cores[i]} opacity="0.2" />
-              <circle cx={x} cy={y} r="4" fill={cores[i]} stroke="#0f172a" strokeWidth="2" />
+              <circle
+                cx={x}
+                cy={y}
+                r="4"
+                fill={cores[i]}
+                stroke="#0f172a"
+                strokeWidth="2"
+              />
             </g>
           );
         })}
@@ -78,9 +156,23 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
           const lr = raio + 22;
           const x = cx + lr * Math.cos(a);
           const y = cy + lr * Math.sin(a);
-          const anchor = Math.abs(Math.cos(a)) < 0.15 ? 'middle' : Math.cos(a) > 0 ? 'start' : 'end';
+          const anchor =
+            Math.abs(Math.cos(a)) < 0.15
+              ? "middle"
+              : Math.cos(a) > 0
+                ? "start"
+                : "end";
           return (
-            <text key={i} x={x} y={y} textAnchor={anchor} dominantBaseline="middle" fill={cores[i]} fontSize="10" fontWeight="700">
+            <text
+              key={i}
+              x={x}
+              y={y}
+              textAnchor={anchor}
+              dominantBaseline="middle"
+              fill={cores[i]}
+              fontSize="10"
+              fontWeight="700"
+            >
               {label.charAt(0) + label.slice(1).toLowerCase()}
             </text>
           );
@@ -88,9 +180,17 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
       </svg>
       <div className="grid grid-cols-2 gap-2 mt-4 max-w-xs mx-auto">
         {chaves.map((chave, i) => (
-          <div key={chave} className="flex items-center gap-2 text-xs bg-slate-800/50 rounded-lg px-3 py-2">
-            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cores[i] }} />
-            <span className="text-slate-400 capitalize">{chave.toLowerCase()}</span>
+          <div
+            key={chave}
+            className="flex items-center gap-2 text-xs bg-slate-800/50 rounded-lg px-3 py-2"
+          >
+            <div
+              className="w-2.5 h-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: cores[i] }}
+            />
+            <span className="text-slate-400 capitalize">
+              {chave.toLowerCase()}
+            </span>
             <span className="text-slate-200 font-bold ml-auto">{dados[i]}</span>
           </div>
         ))}
@@ -100,15 +200,60 @@ function RadarGrafico({ chaves, dados, cores, labels }) {
 }
 
 const atalhos = [
-  { path: '/pacotes', label: 'Abrir Pacotes', icone: IconPacotes, desc: 'Compre e abra pacotes' },
-  { path: '/missoes', label: 'Missoes', icone: IconMissoes, desc: 'Enfrente inimigos' },
-  { path: '/missao-diaria', label: 'Missao Diaria', icone: IconDiaria, desc: 'Desafio do dia' },
-  { path: '/colecao', label: 'Colecao', icone: IconColecao, desc: 'Suas cartas' },
-  { path: '/guildas', label: 'Guildas', icone: IconGuildas, desc: 'Comunidade' },
-  { path: '/boss-guilda', label: 'Boss Guilda', icone: IconBoss, desc: 'Ataque coletivo' },
-  { path: '/ranking', label: 'Ranking', icone: IconRanking, desc: 'Classificacao semanal' },
-  { path: '/streak', label: 'Login Streak', icone: IconStreak, desc: 'Recompensas diarias' },
-  { path: '/criacao', label: 'Criar Carta', icone: IconCriar, desc: 'Crie cartas novas' },
+  {
+    path: "/pacotes",
+    label: "Abrir Pacotes",
+    icone: IconPacotes,
+    desc: "Compre e abra pacotes",
+  },
+  {
+    path: "/missoes",
+    label: "Missoes",
+    icone: IconMissoes,
+    desc: "Enfrente inimigos",
+  },
+  {
+    path: "/missao-diaria",
+    label: "Missao Diaria",
+    icone: IconDiaria,
+    desc: "Desafio do dia",
+  },
+  {
+    path: "/colecao",
+    label: "Colecao",
+    icone: IconColecao,
+    desc: "Suas cartas",
+  },
+  {
+    path: "/guildas",
+    label: "Guildas",
+    icone: IconGuildas,
+    desc: "Comunidade",
+  },
+  {
+    path: "/boss-guilda",
+    label: "Boss Guilda",
+    icone: IconBoss,
+    desc: "Ataque coletivo",
+  },
+  {
+    path: "/ranking",
+    label: "Ranking",
+    icone: IconRanking,
+    desc: "Classificacao semanal",
+  },
+  {
+    path: "/streak",
+    label: "Login Streak",
+    icone: IconStreak,
+    desc: "Recompensas diarias",
+  },
+  {
+    path: "/criacao",
+    label: "Criar Carta",
+    icone: IconCriar,
+    desc: "Crie cartas novas",
+  },
 ];
 
 export default function Dashboard() {
@@ -116,7 +261,8 @@ export default function Dashboard() {
   const { data: colecao } = useColecao();
   const { data: minhas } = useMinhasEstatisticas();
   const [modalAberto, setModalAberto] = useState(false);
-  const [tipoRadar, setTipoRadar] = useState('elemento');
+  const [tipoRadar, setTipoRadar] = useState("elemento");
+  const [modalPerfil, setModalPerfil] = useState(false);
 
   if (!usuario) return null;
 
@@ -142,22 +288,50 @@ export default function Dashboard() {
   }, [colecao]);
 
   const radarDados =
-    tipoRadar === 'elemento'
-      ? { chaves: ELEMENTOS, dados: ELEMENTOS.map((e) => poderPorElemento[e] || 0), cores: ELEMENTOS.map((e) => EL_CORES[e]), labels: ELEMENTOS }
-      : { chaves: CLASSES, dados: CLASSES.map((c) => poderPorClasse[c] || 0), cores: CLASSES.map((c) => CL_CORES[c]), labels: CLASSES };
+    tipoRadar === "elemento"
+      ? {
+          chaves: ELEMENTOS,
+          dados: ELEMENTOS.map((e) => poderPorElemento[e] || 0),
+          cores: ELEMENTOS.map((e) => EL_CORES[e]),
+          labels: ELEMENTOS,
+        }
+      : {
+          chaves: CLASSES,
+          dados: CLASSES.map((c) => poderPorClasse[c] || 0),
+          cores: CLASSES.map((c) => CL_CORES[c]),
+          labels: CLASSES,
+        };
 
   const stats = [
-    { valor: usuario.moedas, label: 'Moedas', icone: IconMoedas },
-    { valor: usuario.sequenciaLogin, label: 'Streak', icone: IconStreak },
-    { valor: minhas?.missoesCompletadas || 0, label: 'Missoes', icone: IconMissoes },
-    { valor: poderTotal, label: 'Poder Total', icone: IconPoder, clicavel: true },
+    { valor: usuario.moedas, label: "Moedas", icone: IconMoedas },
+    { valor: usuario.sequenciaLogin, label: "Streak", icone: IconStreak },
+    {
+      valor: minhas?.missoesCompletadas || 0,
+      label: "Missoes",
+      icone: IconMissoes,
+    },
+    {
+      valor: poderTotal,
+      label: "Poder Total",
+      icone: IconPoder,
+      clicavel: true,
+    },
   ];
 
   return (
     <AnimatedPage>
-      <div className={pageHeader}>
-        <h1 className={pageTitle}>Ola, {usuario.nomeUsuario}!</h1>
-        <p className={pageSubtitle}>O que deseja fazer hoje?</p>
+      <div className={`${pageHeader} flex items-center justify-between`}>
+        <div>
+          <h1 className={pageTitle}>Ola, {usuario.nomeUsuario}!</h1>
+          <p className={pageSubtitle}>O que deseja fazer hoje?</p>
+        </div>
+        <button
+          onClick={() => setModalPerfil(true)}
+          className="p-2 rounded-lg text-slate-500 hover:text-cyan-400 hover:bg-slate-800 transition-all"
+          title="Editar perfil"
+        >
+          <IconConfig size={20} />
+        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -167,23 +341,40 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className={`${statCard} ${stat.clicavel ? 'cursor-pointer hover:border-cyan-500/40 transition-all' : ''}`}
+            className={`${statCard} ${stat.clicavel ? "cursor-pointer hover:border-cyan-500/40 transition-all" : ""}`}
             onClick={stat.clicavel ? () => setModalAberto(true) : undefined}
           >
             <stat.icone size={28} className="text-slate-500 mx-auto" />
             <div className={statValue}>{stat.valor}</div>
             <div className={statLabel}>{stat.label}</div>
-            {stat.clicavel && <div className="text-[10px] text-slate-600 mt-1">Ver distribuicao</div>}
+            {stat.clicavel && (
+              <div className="text-[10px] text-slate-600 mt-1">
+                Ver distribuicao
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
 
       <div className={gridCols3}>
         {atalhos.map((atalho, i) => (
-          <motion.div key={atalho.path} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05 }}>
-            <Link to={atalho.path} className={`${cardBase} ${cardHover} block p-5 group`}>
-              <atalho.icone size={32} className="text-slate-500 group-hover:text-cyan-400 transition-colors mb-2" />
-              <h3 className={`${fontSemibold} text-slate-200`}>{atalho.label}</h3>
+          <motion.div
+            key={atalho.path}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 + i * 0.05 }}
+          >
+            <Link
+              to={atalho.path}
+              className={`${cardBase} ${cardHover} block p-5 group`}
+            >
+              <atalho.icone
+                size={32}
+                className="text-slate-500 group-hover:text-cyan-400 transition-colors mb-2"
+              />
+              <h3 className={`${fontSemibold} text-slate-200`}>
+                {atalho.label}
+              </h3>
               <p className={`${textSecondary} text-xs mt-1`}>{atalho.desc}</p>
             </Link>
           </motion.div>
@@ -203,39 +394,51 @@ export default function Dashboard() {
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.85, opacity: 0 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className={`${cardBase} p-6 w-full max-w-md max-h-[90vh] overflow-y-auto`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-bold text-slate-200">Distribuicao de Poder</h2>
-                <button onClick={() => setModalAberto(false)} className="text-slate-500 hover:text-slate-300 transition-colors">
+                <h2 className="text-lg font-bold text-slate-200">
+                  Distribuicao de Poder
+                </h2>
+                <button
+                  onClick={() => setModalAberto(false)}
+                  className="text-slate-500 hover:text-slate-300 transition-colors"
+                >
                   <IconFechar size={20} />
                 </button>
               </div>
-
               <div className="flex bg-slate-800 rounded-lg p-1 gap-1 mb-5">
                 <button
-                  className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${tipoRadar === 'elemento' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-slate-300'}`}
-                  onClick={() => setTipoRadar('elemento')}
+                  className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${tipoRadar === "elemento" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-slate-300"}`}
+                  onClick={() => setTipoRadar("elemento")}
                 >
                   Elemento
                 </button>
                 <button
-                  className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${tipoRadar === 'classe' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-slate-300'}`}
-                  onClick={() => setTipoRadar('classe')}
+                  className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${tipoRadar === "classe" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-slate-300"}`}
+                  onClick={() => setTipoRadar("classe")}
                 >
                   Classe
                 </button>
               </div>
-
-              <motion.div key={tipoRadar} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }}>
+              <motion.div
+                key={tipoRadar}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.2 }}
+              >
                 <RadarGrafico {...radarDados} />
               </motion.div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {modalPerfil && (
+        <EditarPerfilModal onClose={() => setModalPerfil(false)} />
+      )}
     </AnimatedPage>
   );
 }
