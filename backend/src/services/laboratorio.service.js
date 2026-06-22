@@ -1,6 +1,6 @@
-import * as labRepo from '../repository/laboratorio.repository.js';
-import * as cartaRepo from '../repository/carta.repository.js';
-import * as usuarioRepo from '../repository/usuario.repository.js';
+import * as labRepo from "../repository/laboratorio.repository.js";
+import * as cartaRepo from "../repository/carta.repository.js";
+import * as usuarioRepo from "../repository/usuario.repository.js";
 
 const CUSTO_TRANSFERENCIA = {
   COMUM: 50,
@@ -21,18 +21,21 @@ export async function criar(usuarioId, dados) {
 
 export async function remover(usuarioId, id) {
   const carta = await labRepo.encontrarPorId(id);
-  if (!carta) throw new Error('Carta do laboratório não encontrada');
-  if (carta.usuarioId !== usuarioId) throw new Error('Esta carta não pertence a você');
+  if (!carta) throw new Error("Carta do laboratório não encontrada");
+  if (carta.usuarioId !== usuarioId)
+    throw new Error("Esta carta não pertence a você");
   return labRepo.deletar(id);
 }
 
 export async function transferir(usuarioId, labId) {
   const carta = await labRepo.encontrarPorId(labId);
-  if (!carta) throw new Error('Carta do laboratório não encontrada');
-  if (carta.usuarioId !== usuarioId) throw new Error('Esta carta não pertence a você');
+  if (!carta) throw new Error("Carta do laboratório não encontrada");
+  if (carta.usuarioId !== usuarioId)
+    throw new Error("Esta carta não pertence a você");
   const custo = CUSTO_TRANSFERENCIA[carta.raridade] || 0;
   const usuario = await usuarioRepo.encontrarPorId(usuarioId);
-  if (usuario.moedas < custo) throw new Error(`Moedas insuficientes. Custo: ${custo} moedas`);
+  if (usuario.moedas < custo)
+    throw new Error(`Moedas insuficientes. Custo: ${custo} moedas`);
   const cartaCriada = await cartaRepo.criar({
     nome: carta.nome,
     descricao: carta.descricao,
@@ -46,5 +49,9 @@ export async function transferir(usuarioId, labId) {
   });
   await usuarioRepo.atualizar(usuarioId, { moedas: usuario.moedas - custo });
   await labRepo.deletar(labId);
-  return { carta: cartaCriada, custoPago: custo, moedasRestantes: usuario.moedas - custo };
+  return {
+    carta: cartaCriada,
+    custoPago: custo,
+    moedasRestantes: usuario.moedas - custo,
+  };
 }

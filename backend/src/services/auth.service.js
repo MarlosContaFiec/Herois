@@ -1,13 +1,13 @@
-import bcrypt from 'bcryptjs';
-import * as usuarioRepo from '../repository/usuario.repository.js';
-import { gerarToken } from '../utils/jwt.js';
+import bcrypt from "bcryptjs";
+import * as usuarioRepo from "../repository/usuario.repository.js";
+import { gerarToken } from "../utils/jwt.js";
 
 export async function registrar({ nomeUsuario, email, senha }) {
   const emailExistente = await usuarioRepo.encontrarPorEmail(email);
-  if (emailExistente) throw new Error('Email já cadastrado');
+  if (emailExistente) throw new Error("Email já cadastrado");
 
   const nomeExistente = await usuarioRepo.encontrarPorNomeUsuario(nomeUsuario);
-  if (nomeExistente) throw new Error('Nome de usuário já cadastrado');
+  if (nomeExistente) throw new Error("Nome de usuário já cadastrado");
 
   const senhaHash = await bcrypt.hash(senha, 10);
   const usuario = await usuarioRepo.criar({ nomeUsuario, email, senhaHash });
@@ -28,10 +28,10 @@ export async function registrar({ nomeUsuario, email, senha }) {
 
 export async function login({ email, senha }) {
   const usuario = await usuarioRepo.encontrarPorEmail(email);
-  if (!usuario) throw new Error('Credenciais inválidas');
+  if (!usuario) throw new Error("Credenciais inválidas");
 
   const senhaValida = await bcrypt.compare(senha, usuario.senhaHash);
-  if (!senhaValida) throw new Error('Credenciais inválidas');
+  if (!senhaValida) throw new Error("Credenciais inválidas");
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -81,7 +81,7 @@ export async function login({ email, senha }) {
 
 export async function perfil(usuarioId) {
   const usuario = await usuarioRepo.encontrarPorId(usuarioId);
-  if (!usuario) throw new Error('Usuário não encontrado');
+  if (!usuario) throw new Error("Usuário não encontrado");
 
   const { senhaHash, ...dados } = usuario;
   return dados;

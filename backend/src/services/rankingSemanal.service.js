@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 function obterInicioSemana() {
   const hoje = new Date();
@@ -13,9 +13,9 @@ export async function atualizarEstatisticas(usuarioId, tipo, valor = 1) {
   const semanaInicio = obterInicioSemana();
 
   const campo = {
-    PACOTE_ABERTO: 'pacotesAbertos',
-    MISSAO_COMPLETA: 'missoesCompletadas',
-    BOSS_DANO: 'danoBossTotal',
+    PACOTE_ABERTO: "pacotesAbertos",
+    MISSAO_COMPLETA: "missoesCompletadas",
+    BOSS_DANO: "danoBossTotal",
   }[tipo];
 
   if (!campo) return;
@@ -41,7 +41,7 @@ export async function obterRanking() {
 
   const stats = await prisma.estatisticaSemanal.findMany({
     where: { semanaInicio },
-    include: { },
+    include: {},
   });
 
   const usuariosIds = [...new Set(stats.map((s) => s.usuarioId))];
@@ -54,17 +54,26 @@ export async function obterRanking() {
   const rankingPacotes = [...stats]
     .sort((a, b) => b.pacotesAbertos - a.pacotesAbertos)
     .slice(0, 10)
-    .map((s) => ({ usuario: mapaUsuarios[s.usuarioId]?.nomeUsuario, valor: s.pacotesAbertos }));
+    .map((s) => ({
+      usuario: mapaUsuarios[s.usuarioId]?.nomeUsuario,
+      valor: s.pacotesAbertos,
+    }));
 
   const rankingMissoes = [...stats]
     .sort((a, b) => b.missoesCompletadas - a.missoesCompletadas)
     .slice(0, 10)
-    .map((s) => ({ usuario: mapaUsuarios[s.usuarioId]?.nomeUsuario, valor: s.missoesCompletadas }));
+    .map((s) => ({
+      usuario: mapaUsuarios[s.usuarioId]?.nomeUsuario,
+      valor: s.missoesCompletadas,
+    }));
 
   const rankingBoss = [...stats]
     .sort((a, b) => b.danoBossTotal - a.danoBossTotal)
     .slice(0, 10)
-    .map((s) => ({ usuario: mapaUsuarios[s.usuarioId]?.nomeUsuario, valor: s.danoBossTotal }));
+    .map((s) => ({
+      usuario: mapaUsuarios[s.usuarioId]?.nomeUsuario,
+      valor: s.danoBossTotal,
+    }));
 
   const vencedores = {
     maisPacotes: rankingPacotes[0] || null,
@@ -78,7 +87,7 @@ export async function obterRanking() {
     rankingMissoes,
     rankingBoss,
     vencedores,
-    premio: 'O vencedor de cada critério pode criar 1 carta Única',
+    premio: "O vencedor de cada critério pode criar 1 carta Única",
   };
 }
 

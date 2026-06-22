@@ -1,26 +1,32 @@
-import * as missaoDiariaRepo from '../repository/missaoDiaria.repository.js';
-import * as pacoteRepo from '../repository/pacote.repository.js';
-import { multiplicadorElemental } from '../utils/constantes.js';
+import * as missaoDiariaRepo from "../repository/missaoDiaria.repository.js";
+import * as pacoteRepo from "../repository/pacote.repository.js";
+import { multiplicadorElemental } from "../utils/constantes.js";
 
-const ELEMENTOS = ['FOGO', 'AGUA', 'TERRA', 'VENTO', 'LUZ', 'TREVAS'];
+const ELEMENTOS = ["FOGO", "AGUA", "TERRA", "VENTO", "LUZ", "TREVAS"];
 
 const INIMIGOS = {
-  FOGO:   'Fênix das Chamas',
-  AGUA:   'Kraken Profundo',
-  TERRA:  'Golem Ancestral',
-  VENTO:  'Dragão Celeste',
-  LUZ:    'Seráfico Guardião',
-  TREVAS: 'Lorde das Sombras',
+  FOGO: "Fênix das Chamas",
+  AGUA: "Kraken Profundo",
+  TERRA: "Golem Ancestral",
+  VENTO: "Dragão Celeste",
+  LUZ: "Seráfico Guardião",
+  TREVAS: "Lorde das Sombras",
 };
 
-const XP_DUPLICATA = { COMUM: 5, INCOMUM: 15, RARA: 40, EPICA: 100, LENDARIA: 250 };
+const XP_DUPLICATA = {
+  COMUM: 5,
+  INCOMUM: 15,
+  RARA: 40,
+  EPICA: 100,
+  LENDARIA: 250,
+};
 
 function obterElementoDoDia(usuarioId) {
-  const hoje = new Date().toISOString().split('T')[0];
+  const hoje = new Date().toISOString().split("T")[0];
   let hash = 0;
   const str = usuarioId + hoje;
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0;
   }
   return ELEMENTOS[Math.abs(hash) % ELEMENTOS.length];
@@ -40,7 +46,7 @@ function calcularMelhoresCartas(cartas) {
 function calcularPoderEfetivo(cartas, elementoInimigo) {
   return cartas.reduce((total, cu) => {
     const mult = multiplicadorElemental(cu.carta.elemento, elementoInimigo);
-    return total + (cu.carta.poder * mult);
+    return total + cu.carta.poder * mult;
   }, 0);
 }
 
@@ -54,14 +60,18 @@ function calcularChance(poderJogador, poderInimigo) {
 
 export async function obterStatus(usuarioId) {
   const usuario = await missaoDiariaRepo.encontrarUsuario(usuarioId);
-  if (!usuario) throw new Error('Usuário não encontrado');
+  if (!usuario) throw new Error("Usuário não encontrado");
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
   const amanha = new Date(hoje);
   amanha.setDate(amanha.getDate() + 1);
 
-  const jaTentou = await missaoDiariaRepo.encontrarTentativaHoje(usuarioId, hoje, amanha);
+  const jaTentou = await missaoDiariaRepo.encontrarTentativaHoje(
+    usuarioId,
+    hoje,
+    amanha,
+  );
 
   const elemento = obterElementoDoDia(usuarioId);
 
@@ -77,7 +87,9 @@ export async function obterStatus(usuarioId) {
     nomeInimigo: INIMIGOS[elemento],
     elemento,
     poderInimigo,
-    pacoteRecompensa: pacoteDoDia ? { id: pacoteDoDia.id, nome: pacoteDoDia.nome } : null,
+    pacoteRecompensa: pacoteDoDia
+      ? { id: pacoteDoDia.id, nome: pacoteDoDia.nome }
+      : null,
     jaTentou: !!jaTentou,
     tentativa: jaTentou || null,
   };
@@ -85,21 +97,26 @@ export async function obterStatus(usuarioId) {
 
 export async function enfrentar(usuarioId, cartasUsuarioIds) {
   const usuario = await missaoDiariaRepo.encontrarUsuario(usuarioId);
-  if (!usuario) throw new Error('Usuário não encontrado');
+  if (!usuario) throw new Error("Usuário não encontrado");
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
   const amanha = new Date(hoje);
   amanha.setDate(amanha.getDate() + 1);
 
-  const jaTentou = await missaoDiariaRepo.encontrarTentativaHoje(usuarioId, hoje, amanha);
-  if (jaTentou) throw new Error('Você já tentou a missão diária hoje');
+  const jaTentou = await missaoDiariaRepo.encontrarTentativaHoje(
+    usuarioId,
+    hoje,
+    amanha,
+  );
+  if (jaTentou) throw new Error("Você já tentou a missão diária hoje");
 
   const cartas = [];
   for (const id of cartasUsuarioIds) {
     const cu = await missaoDiariaRepo.encontrarCartaUsuario(id);
     if (!cu) throw new Error(`Carta ${id} não encontrada`);
-    if (cu.usuarioId !== usuarioId) throw new Error(`Carta ${id} não pertence a você`);
+    if (cu.usuarioId !== usuarioId)
+      throw new Error(`Carta ${id} não pertence a você`);
     cartas.push(cu);
   }
 
@@ -107,7 +124,10 @@ export async function enfrentar(usuarioId, cartasUsuarioIds) {
   const nomeInimigo = INIMIGOS[elemento];
 
   const melhores = calcularMelhoresCartas(usuario.cartas);
-  const media = melhores.length > 0 ? melhores.reduce((s, c) => s + c.carta.poder, 0) / melhores.length : 50;
+  const media =
+    melhores.length > 0
+      ? melhores.reduce((s, c) => s + c.carta.poder, 0) / melhores.length
+      : 50;
   const poderInimigo = Math.floor(media * 1.5);
 
   const poderJogador = calcularPoderEfetivo(cartas, elemento);
@@ -119,7 +139,10 @@ export async function enfrentar(usuarioId, cartasUsuarioIds) {
 
   if (venceu) {
     const moedas = Math.floor(poderInimigo * 0.5);
-    const bonusMoedasTitulo = usuario.tituloAtivo?.tipoBonus === 'MOEDAS' ? usuario.tituloAtivo.valorBonus : 0;
+    const bonusMoedasTitulo =
+      usuario.tituloAtivo?.tipoBonus === "MOEDAS"
+        ? usuario.tituloAtivo.valorBonus
+        : 0;
     const moedasFinal = Math.floor(moedas * (1 + bonusMoedasTitulo));
 
     const xpGanho = Math.floor(poderInimigo * 0.3);
@@ -131,7 +154,9 @@ export async function enfrentar(usuarioId, cartasUsuarioIds) {
 
     for (const cu of cartas) {
       const xpCarta = Math.floor(xpGanho * 0.5);
-      await missaoDiariaRepo.atualizarCartaUsuario(cu.id, { xp: cu.xp + xpCarta });
+      await missaoDiariaRepo.atualizarCartaUsuario(cu.id, {
+        xp: cu.xp + xpCarta,
+      });
     }
 
     const pacotes = await pacoteRepo.listarTodos();
@@ -140,20 +165,24 @@ export async function enfrentar(usuarioId, cartasUsuarioIds) {
     recompensas = {
       moedas: moedasFinal,
       experiencia: xpGanho,
-      pacote: pacoteDoDia ? { id: pacoteDoDia.id, nome: pacoteDoDia.nome } : null,
+      pacote: pacoteDoDia
+        ? { id: pacoteDoDia.id, nome: pacoteDoDia.nome }
+        : null,
     };
   }
 
   await missaoDiariaRepo.criarTentativa({
     usuarioId,
     dataMissao: new Date(),
-    cartasUsadas: JSON.stringify(cartas.map((cu) => ({ cartaUsuarioId: cu.id, poder: cu.carta.poder }))),
-    resultado: venceu ? 'VITORIA' : 'DERROTA',
+    cartasUsadas: JSON.stringify(
+      cartas.map((cu) => ({ cartaUsuarioId: cu.id, poder: cu.carta.poder })),
+    ),
+    resultado: venceu ? "VITORIA" : "DERROTA",
     recompensas: recompensas ? JSON.stringify(recompensas) : null,
   });
 
   return {
-    resultado: venceu ? 'VITORIA' : 'DERROTA',
+    resultado: venceu ? "VITORIA" : "DERROTA",
     nomeInimigo,
     elemento,
     poderInimigo,

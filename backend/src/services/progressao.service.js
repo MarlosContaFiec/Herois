@@ -1,8 +1,12 @@
-import prisma from '../utils/prisma.js';
+import prisma from "../utils/prisma.js";
 
 function parseCondicao(condicaoStr) {
   if (!condicaoStr) return null;
-  try { return JSON.parse(condicaoStr); } catch { return null; }
+  try {
+    return JSON.parse(condicaoStr);
+  } catch {
+    return null;
+  }
 }
 
 async function verificarCondicao(usuarioId, condicao) {
@@ -22,27 +26,31 @@ async function verificarCondicao(usuarioId, condicao) {
 
   if (condicao.missoesCompletadas) {
     const vitorias = await prisma.tentativaMissao.count({
-      where: { usuarioId, resultado: 'VITORIA' },
+      where: { usuarioId, resultado: "VITORIA" },
     });
     if (vitorias < condicao.missoesCompletadas) return false;
   }
 
   if (condicao.tituloEspecifico) {
     const tem = usuario.titulosUsuario.some(
-      (tu) => tu.titulo.nome === condicao.tituloEspecifico
+      (tu) => tu.titulo.nome === condicao.tituloEspecifico,
     );
     if (!tem) return false;
   }
 
   if (condicao.qtdCartasElemento) {
     const { elemento, quantidade } = condicao.qtdCartasElemento;
-    const count = usuario.cartas.filter((cu) => cu.carta.elemento === elemento).length;
+    const count = usuario.cartas.filter(
+      (cu) => cu.carta.elemento === elemento,
+    ).length;
     if (count < quantidade) return false;
   }
 
   if (condicao.qtdCartasClasse) {
     const { classe, quantidade } = condicao.qtdCartasClasse;
-    const count = usuario.cartas.filter((cu) => cu.carta.classe === classe).length;
+    const count = usuario.cartas.filter(
+      (cu) => cu.carta.classe === classe,
+    ).length;
     if (count < quantidade) return false;
   }
 
@@ -51,10 +59,10 @@ async function verificarCondicao(usuarioId, condicao) {
 
 export async function obterProgressao(usuarioId) {
   const usuario = await prisma.usuario.findUnique({ where: { id: usuarioId } });
-  if (!usuario) throw new Error('Usuário não encontrado');
+  if (!usuario) throw new Error("Usuário não encontrado");
 
   const vitorias = await prisma.tentativaMissao.count({
-    where: { usuarioId, resultado: 'VITORIA' },
+    where: { usuarioId, resultado: "VITORIA" },
   });
 
   const totalCartas = await prisma.cartaUsuario.count({
@@ -63,7 +71,7 @@ export async function obterProgressao(usuarioId) {
 
   const pacotes = await prisma.pacote.findMany({
     where: { secreto: false },
-    orderBy: { custo: 'asc' },
+    orderBy: { custo: "asc" },
   });
 
   const pacotesDesbloqueados = [];
@@ -91,7 +99,7 @@ export async function obterProgressao(usuarioId) {
   const titulosBloqueados = titulos.filter((t) => !idsPossuidos.has(t.id));
 
   const comprasPorPacote = await prisma.compraPacote.groupBy({
-    by: ['pacoteId'],
+    by: ["pacoteId"],
     where: { usuarioId },
     _count: true,
   });
@@ -107,7 +115,11 @@ export async function obterProgressao(usuarioId) {
   }
 
   return {
-    usuario: { nivel: usuario.nivel, experiencia: usuario.experiencia, moedas: usuario.moedas },
+    usuario: {
+      nivel: usuario.nivel,
+      experiencia: usuario.experiencia,
+      moedas: usuario.moedas,
+    },
     estatisticas: { missoesCompletadas: vitorias, totalCartas },
     pacotesDesbloqueados,
     pacotesBloqueados,
@@ -128,7 +140,11 @@ export async function verificarDesbloqueios(usuarioId) {
     const condicao = parseCondicao(pacote.condicaoDesbloqueio);
     const desbloqueado = await verificarCondicao(usuarioId, condicao);
     if (desbloqueado) {
-      novosDesbloqueios.push({ tipo: 'PACOTE', id: pacote.id, nome: pacote.nome });
+      novosDesbloqueios.push({
+        tipo: "PACOTE",
+        id: pacote.id,
+        nome: pacote.nome,
+      });
     }
   }
 
