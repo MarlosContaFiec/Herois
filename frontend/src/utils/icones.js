@@ -1,4 +1,5 @@
 import {
+  FaCog,
   FaHome,
   FaLayerGroup,
   FaBookOpen,
@@ -47,7 +48,9 @@ import {
   FaTint,
   FaMountain,
   FaChevronDown,
-} from 'react-icons/fa';
+  FaClock,
+  FaRegStar,
+} from "react-icons/fa";
 
 export const IconHome = FaHome;
 export const IconCartas = FaLayerGroup;
@@ -68,7 +71,7 @@ export const IconBoss = FaDragon;
 export const IconTroca = FaExchangeAlt;
 export const IconVitrine = FaStore;
 export const IconDashboard = FaHome;
-
+export const IconStar = FaStar;
 export const IconMoedas = FaCoins;
 export const IconNivel = FaStar;
 export const IconXP = FaBolt;
@@ -90,19 +93,21 @@ export const IconFiltro = FaFilter;
 export const IconOlho = FaEye;
 export const IconChevron = FaChevronDown;
 export const IconPoder = FaBolt;
-
+export const IconClock = FaClock;
 export const IconFogo = FaFire;
 export const IconAgua = FaTint;
 export const IconTerra = FaMountain;
 export const IconVento = FaWind;
 export const IconLuz = FaSun;
 export const IconTrevas = FaMoon;
-
+export const IconHeart = FaHeart;
+export const IconStarOutline = FaRegStar;
 export const IconGuerreiro = FaUserShield;
 export const IconMago = FaHatWizard;
 export const IconPatrulheiro = FaCrosshairs;
 export const IconCurandeiro = FaHeart;
 export const IconLadino = FaUserSecret;
+export const IconConfig = FaCog;
 
 export const elementoIcon = {
   FOGO: IconFogo,
