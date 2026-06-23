@@ -6,7 +6,7 @@ export async function registrar({ nomeUsuario, email, senha }) {
   const emailExistente = await usuarioRepo.encontrarPorEmail(email);
   if (emailExistente) throw new Error("Email já cadastrado");
 
-  const nomeExistente = await usuarioRepo.encontrarPorNomeUsuario(nomeUsuario);
+  const nomeExistente = await usuarioRepo.encontrarPorNome(nomeUsuario);
   if (nomeExistente) throw new Error("Nome de usuário já cadastrado");
 
   const senhaHash = await bcrypt.hash(senha, 10);

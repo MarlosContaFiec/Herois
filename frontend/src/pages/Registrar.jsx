@@ -36,8 +36,9 @@ export default function Registrar() {
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className={labelBase}>Nome de Usuário</label>
+            <label htmlFor="nomeUsuario" className={labelBase}>Nome de Usuário</label>
             <input
+              id="nomeUsuario"
               type="text"
               className={inputBase}
               value={nomeUsuario}
@@ -47,8 +48,9 @@ export default function Registrar() {
             />
           </div>
           <div>
-            <label className={labelBase}>Email</label>
+            <label htmlFor="email" className={labelBase}>Email</label>
             <input
+              id="email"
               type="email"
               className={inputBase}
               value={email}
@@ -58,8 +60,9 @@ export default function Registrar() {
             />
           </div>
           <div>
-            <label className={labelBase}>Senha</label>
+            <label htmlFor="senha" className={labelBase}>Senha</label>
             <input
+              id="senha"
               type="password"
               className={inputBase}
               value={senha}

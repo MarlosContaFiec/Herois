@@ -27,13 +27,12 @@ export function AuthProvider({ children }) {
     }
   }, [token]);
 
-  const login = (tokenRecebido, usuarioRecebido) => {
+const login = (tokenRecebido, usuarioRecebido) => {
     localStorage.setItem("token", tokenRecebido);
     localStorage.setItem("usuario", JSON.stringify(usuarioRecebido));
     setToken(tokenRecebido);
     setUsuario(usuarioRecebido);
-    navigate("/");
-  };
+};
 
   const logout = () => {
     localStorage.removeItem("token");

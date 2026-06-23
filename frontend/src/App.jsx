@@ -6,8 +6,7 @@ import { ToastProvider } from "./context/ToastContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import GuildasRouter from "./components/GuildasRouter";
-import Login from "./pages/Login";
-import Registrar from "./pages/Registrar";
+import AuthLayout from "./pages/AuthLayout";
 import Dashboard from "./pages/Dashboard";
 import Cartas from "./pages/Cartas";
 import Pacotes from "./pages/Pacotes";
@@ -42,8 +41,8 @@ function AppRotas() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/registrar" element={<Registrar />} />
+        <Route path="/login" element={<AuthLayout />} />
+        <Route path="/registrar" element={<AuthLayout />} />
         <Route path="/" element={wrapProtected(Dashboard)} />
         <Route path="/cartas" element={wrapProtected(Cartas)} />
         <Route path="/pacotes" element={wrapProtected(Pacotes)} />

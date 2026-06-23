@@ -9,6 +9,9 @@ export const encontrarPorEmail = (email) =>
 export const encontrarPorNome = (nomeUsuario) =>
   prisma.usuario.findUnique({ where: { nomeUsuario } });
 
+export const criar = (dados) =>
+  prisma.usuario.create({ data: dados });
+
 export const atualizar = (id, data) =>
   prisma.usuario.update({
     where: { id },

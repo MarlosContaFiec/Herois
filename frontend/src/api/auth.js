@@ -16,11 +16,11 @@ export function useLogin() {
     },
     onSuccess: (data) => {
       login(data.token, data.usuario);
-      toast.success("Login realizado com sucesso!");
+      toast.sucesso("Login realizado com sucesso!");
       navigate("/");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || "Erro ao fazer login");
+      toast.erro(error.response?.data?.erro || "Erro ao fazer login");
     },
   });
 }
@@ -37,11 +37,11 @@ export function useRegistrar() {
     },
     onSuccess: (data) => {
       login(data.token, data.usuario);
-      toast.success("Conta criada com sucesso!");
+      toast.sucesso("Conta criada com sucesso!");
       navigate("/");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || "Erro ao registrar");
+      toast.erro(error.response?.data?.erro || "Erro ao registrar");
     },
   });
 }
