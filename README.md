@@ -139,8 +139,7 @@ Para acessar a aplicação em desenvolvimento, use as seguintes credenciais:
 | **Perfil**        | **Email**                | **Senha** | **Permissões**                             |
 |-------------------|--------------------------|-----------|---------------------------------------------|
 | **DEV**           | dev@dev.com              | 123456    | Acesso total ao sistema                    |
-| **ADMIN**         | admin@admin.com          | 123456    | Gerenciar heróis, equipes e estatísticas   |
-| **USUÁRIO**       | usuario@usuario.com      | 123456    | Consultar catálogo de heróis               |
+
 
 > **⚠️ Aviso:** Estas são credenciais padrão apenas para desenvolvimento. Em produção, altere todas as senhas e utilize autenticação segura.
 
